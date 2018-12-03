@@ -2,6 +2,6 @@
 markdown: kramdown
   auto_id_prefix : false
   auto_ids: false
-theme: minima
+#theme: minima
 plugins:
  - jekyll-feed
