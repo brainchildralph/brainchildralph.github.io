@@ -1,5 +1,6 @@
 ---
 layout: post
+title: "Bash Notes"
 categories: [bash,linux]
 ---
 ```
