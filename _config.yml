@@ -1,5 +1,6 @@
 # Build settings
 markdown: kramdown
+  auto_id_prefix : false
   auto_ids: false
 theme: minima
 plugins:
