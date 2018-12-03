@@ -1,5 +1,6 @@
 # Build settings
 markdown: kramdown
+  auto_ids: false
 theme: minima
 plugins:
  - jekyll-feed
