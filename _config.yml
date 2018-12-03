@@ -2,5 +2,5 @@
 markdown: kramdown
   auto_ids: false
 theme: minima
-# plugins:
-#  - jekyll-feed
+plugins:
+ - jekyll-feed
