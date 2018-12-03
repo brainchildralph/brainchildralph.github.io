@@ -2,8 +2,8 @@
 published: false
 ---
 ---
-layout:post
-categories:bash linux
+layout: post
+categories: [bash,linux]
 ---
 ```
 A=( foo bar "a  b c" 42 )
