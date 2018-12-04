@@ -11,7 +11,6 @@ layout: post
 - Google Maps API Javascript 以及 API Key
 - Callback Function
 
----
 
 **1. div 標籤，並且宣告 id**
 
