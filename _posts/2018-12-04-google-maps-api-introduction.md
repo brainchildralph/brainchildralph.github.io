@@ -13,8 +13,7 @@ catagories:
 ---
 **1. div 標籤，並且宣告 id**
 ```
-<!-- div id 'map' --> 
-<div id="map"></div>
+
 ```
 **2. 加載 Google Maps API Javascript **
 ```
