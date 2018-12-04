@@ -50,3 +50,10 @@ theme: minima
 plugins:
  - jekyll-feed
  - jekyll-seo-tag
+
+analytics:
+  google: UA-111464944-2
+
+adsense:
+  ad-client: ca-pub-7910474923772750
+
