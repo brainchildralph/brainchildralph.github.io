@@ -30,4 +30,19 @@ date_modified: '2018-12-04 17:53:00+0800'
 **3. 宣告 Callback Function**
 
 ```
+function initMap(){
+    var map=new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      //center: {lat: -33.890, lng: 151.274}
+      draggable: false,
+      zoomControl: false,
+      mapTypeControl: false,
+      scaleControl: false,
+      streetViewControl: false,
+      rotateControl: false,
+      fullscreenControl: false
+    });
+    map.setCenter({lat: -33.890, lng: 151.274});
+    ...
+}
 ```
