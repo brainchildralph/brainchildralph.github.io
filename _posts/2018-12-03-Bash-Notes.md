@@ -1,7 +1,10 @@
 ---
 layout: post
-title: "Bash Notes"
-categories: [bash,linux]
+title: How to slice an array in Bash
+categories:
+  - bash
+  - linux
+published: true
 ---
 ```
 A=( foo bar "a  b c" 42 )
