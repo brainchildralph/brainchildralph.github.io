@@ -4,6 +4,8 @@ title: Goolge Maps API 使用介紹
 catagories:
   - google
 layout: post
+date: '2018-12-04 17:53:00+0800'
+date_modified: '2018-12-04 17:53:00+0800'
 ---
 
 ### Google Maps API 包含下列幾個元素：
@@ -19,13 +21,13 @@ layout: post
 <div id="map"></div>
 ```
 
-**2. 加載 Google Maps API Javascript **
+**2. 加載 Google Maps API Javascript**
 
 ```
 <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&callback=initMap" async defer></script>
 ```
 
-**3. 宣告 Callback Function **
+**3. 宣告 Callback Function**
 
 ```
 ```
