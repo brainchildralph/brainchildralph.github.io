@@ -6,7 +6,7 @@ catagories:
   - modbus
 ---
 
-**libmodbus github**
+**libmodbus**
 
-[Github Link](https://github.com/stephane/libmodbus)
+[Git 連結](https://github.com/stephane/libmodbus)
 
