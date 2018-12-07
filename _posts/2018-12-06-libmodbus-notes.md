@@ -2,7 +2,7 @@
 published: true
 title: libmodbus 筆記
 layout: default
-catagories:
+categories:
   - modbus
 ---
 

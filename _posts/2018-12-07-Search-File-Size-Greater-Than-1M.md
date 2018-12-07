@@ -2,7 +2,7 @@
 published: true
 title: "Linux - 搜尋檔案大小超過特定值"
 layout: default
-catagories:
+categories:
   - git
 ---
 

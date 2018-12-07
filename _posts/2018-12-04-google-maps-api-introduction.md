@@ -1,7 +1,7 @@
 ---
 published: true
 title: Goolge Maps API 使用介紹
-catagories:
+categories:
   - google
 layout: post
 date: '2018-12-04 17:53:00+0800'

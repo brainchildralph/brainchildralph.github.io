@@ -1,7 +1,7 @@
 ---
 published: false
 layout: post
-catagories:
+categories:
   - sample
 ---
 ## A New Post

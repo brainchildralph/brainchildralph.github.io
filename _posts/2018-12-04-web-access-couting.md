@@ -1,7 +1,7 @@
 ---
 published: false
 title: 三行搞定網站訪問量與人數
-catagories:
+categories:
   - html
 ---
 ### 三行搞定網站訪問量與人數

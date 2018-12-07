@@ -1,6 +1,6 @@
 ---
 layout: page
-title: Category
+title: 分類
 description: All post entries ordered by categories.
 ---
 
