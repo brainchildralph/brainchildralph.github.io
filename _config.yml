@@ -1,5 +1,9 @@
 title: BrainChildRalph
-author: branchildralph
+author: 
+  name: branchildralph
+  twitter: 
+  github: branchildralph
+
 email: brainchildralph@gmail.com
 description: > # this means to ignore newlines until "twitter_username:"
   BrainChildRalph's Blog for research and development notes. 
