@@ -6,3 +6,5 @@ _site
 liquid.md
 test.md
 test/aws/test/
+_layouts
+_includes
