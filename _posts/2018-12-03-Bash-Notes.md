@@ -2,8 +2,8 @@
 layout: post
 title: How to slice an array in Bash
 categories:
-  - bash
   - linux
+  - bash
 published: true
 ---
 ```
