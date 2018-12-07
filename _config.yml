@@ -4,6 +4,7 @@ email: brainchildralph@gmail.com
 description: > # this means to ignore newlines until "twitter_username:"
   BrainChildRalph's Blog for research and development notes. 
 
+baseurl: ""
 url: "https://brainchildralph.github.io"
 
 # social links

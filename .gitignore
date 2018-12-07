@@ -3,3 +3,6 @@
 Gemfile.lock
 _site
 *.gem
+liquid.md
+test.md
+test/aws/test/
