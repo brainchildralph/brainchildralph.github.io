@@ -1,8 +1,6 @@
-.bundle
-.sass-cache
-Gemfile.lock
 _site
-*.gem
+.sass-cache
+.jekyll-metadata
 liquid.md
 test.md
 test/aws/test/
