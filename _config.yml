@@ -16,6 +16,10 @@ description: >- # this means to ignore newlines until "baseurl:"
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://brainchildralph.github.io"
 
+#header_pages:
+# - categories.html
+# - about.md
+
 #logo:
 #  path: "/img/favicons/android-chrome-192x192.png"
 #  width: 192
