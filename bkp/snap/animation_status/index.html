@@ -1,0 +1,477 @@
+﻿<!doctype html>
+<html lang="en">
+	<head>
+		<title>Animation HTML</title>
+		<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+		<script language="javascript" type="text/javascript" src="./js/jquery.js"></script>
+		<script language="javascript" type="text/javascript" src="./js/snap.svg.js"></script>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$(window).resize(function(){
+				window_resize();
+			});
+			window_resize();
+		});
+
+		var move_position_left, move_position_top;
+		function window_resize(){
+			//$("#page_bg").css("width", "100%").css("height", "100%");
+			$("#page_bg").css("width", $(window).width() + $(window).scrollWidth).css("height", $(window).height() + $(window).scrollHeight);
+		}
+
+		function eip_block_click(){
+			clear_all_info();
+			run_path_eip();
+			var timer;
+			if(timer) clearTimeout(timer);
+			timer=setTimeout(function(){
+				$("#eip_cover").hide(500);
+			}, 2000);
+		}
+
+		function shome_block_click(){
+			clear_all_info();
+			run_path_shome();
+			var timer;
+			if(timer) clearTimeout(timer);
+			timer=setTimeout(function(){
+				$("#shome_cover").hide(500);
+			}, 2000);			
+		}
+
+		function iso_block_click(){
+			clear_all_info();
+			run_path_iso();
+			var timer;
+			if(timer) clearTimeout(timer);
+			timer=setTimeout(function(){
+				$("#iso_cover").hide(500);
+			}, 2000);			
+		}
+
+		function meeting_block_click(){
+			clear_all_info();
+			run_path_mt();
+			var timer;
+			if(timer) clearTimeout(timer);
+			timer=setTimeout(function(){
+				run_path_meeting();
+				var timer2;
+				if(timer2) clearTimeout(timer2);
+				timer2=setTimeout(function(){
+					$("#meeting_cover").hide(500);
+				}, 1000);
+			}, 1000);
+		}
+
+		function trace_block_click(){
+			clear_all_info();
+			run_path_mt();
+			var timer;
+			if(timer) clearTimeout(timer);
+			timer=setTimeout(function(){
+				run_path_trace();
+				var timer2;
+				if(timer2) clearTimeout(timer2);
+				tiemr2=setTimeout(function(){
+					$("#trace_cover").hide(500);
+				}, 1000);
+			}, 1000);
+		}
+
+		function clear_all_info(){
+			$("#eip_cover").show();
+			$("#shome_cover").show();
+			$("#iso_cover").show();
+			$("#meeting_cover").show();
+			$("#trace_cover").show();
+		}
+
+		</script>
+		<style>
+		#page_bg{
+			position:absolute;
+			top:0;
+			left:0;
+			margin:0;
+			padding:0;
+			background: url('status_fin.jpg') no-repeat;
+		}
+		</style>
+	</head>
+	<body>
+	<!--
+		<iframe id="coveriframe" style="width:100%;height:100%;z-index:200;opacity:0.8;filter:alpha(opacity=100);top:0;left:0; display:none; position:absolute"></iframe>
+	-->
+		<div id="cover" style="width:100%;height:100%;z-index:30;opacity:0.8;filter:alpha(opacity=80);top:0;left:0; display:none; position:absolute; background-color:black"></div>
+
+		<div id="page_bg">
+
+		<div id="eip_block" style="position:absolute; top:235px; left:30px; width:150px; height:100px; background-color:yellow; opacity:0; filter:alpha(opacity=0); cursor:pointer; z-index:1" onClick="eip_block_click();"></div>
+		<div id="eip_cover" style="position:absolute; width:50px; height:35px; top:319px; left:80px; background-color:white;"></div>
+
+		<div id="shome_block" style="position:absolute; top:375px; left:75px; width:150px; height:110px; background-color:yellow; opacity:0; filter:alpha(opacity=0); cursor:pointer; z-index:1" onClick="shome_block_click();"></div>
+		<div id="shome_cover" style="position:absolute; width:150px; height:35px; top:480px; left:75px; background-color:white;"></div>
+
+		<div id="iso_block" style="position:absolute; top:114px; left:448px; width:150px; height:110px; background-color:yellow; opacity:0; filter:alpha(opacity=0); cursor:pointer; z-index:1" onClick="iso_block_click();"></div>
+		<div id="iso_cover" style="position:absolute; width:130px; height:35px; top:166px; left:575px; background-color:white;"></div>
+
+		<div id="meeting_block" style="position:absolute; top:328px; left:745px; width:115px; height:110px; background-color:yellow; opacity:0; filter:alpha(opacity=0); cursor:pointer; z-index:1" onClick="meeting_block_click();"></div>
+		<div id="meeting_cover" style="position:absolute; width:100px; height:35px; top:390px; left:852px; background-color:white;"></div>
+
+		<div id="trace_block" style="position:absolute; top:202px; left:636px; width:135px; height:110px; background-color:yellow; opacity:0; filter:alpha(opacity=0); cursor:pointer; z-index:1" onClick="trace_block_click();"></div>
+		<div id="trace_cover" style="position:absolute; width:65px; height:35px; top:268px; left:746px; background-color:white;"></div>
+
+		<!--
+		<svg id="svgLine" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1170" height="707" viewBox="0 0 1170 707">
+		-->
+		<svg id="svgLine" width="1170" height="707" viewBox="0 0 1170 707">
+		<!--
+		    <path d="m220,219 l-114,0 l0,35" stroke="red" stroke-width="2" fill="none" id="test_wire1"></path>
+			<path d="m335,329 l-86,0 l0,-81" stroke="red" stroke-width="2" fill="none" id="test_wire1-1"></path>
+		    <path d="m334,349 l-60,0 l0,101 l-87,0" stroke="red" stroke-width="2" fill="none" id="test_wire2"></path>
+		    <path d="m433,322 l100,0 l0,-95" stroke="red" stroke-width="2" fill="none" id="test_wire3"></path>
+		    <path d="m433,347 l86,0" stroke="red" stroke-width="2" fill="none" id="test_wire4"></path>
+		    <path d="m577,346 l127,0 l0,60 l72,0" stroke="red" stroke-width="2" fill="none" id="test_wire4-1"></path>
+		    <path d="m552,325 l0,-41 l115,0" stroke="red" stroke-width="2" fill="none" id="test_wire4-2"></path>
+		-->
+		</svg>	
+		<script>
+			function run_path_eip(){
+				var snapC = Snap("#svgLine");
+				//var path_eip = snapC.path("m335,329 l-86,0 l0,-81");
+				var path_eip = snapC.path("M335,329 L261,329 Q249 329,249,316 L249,248");
+				var path_eip_len= path_eip.getTotalLength();
+				path_eip.attr(
+					{
+					    id: "path_eip",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_eip_len + " " + path_eip_len,
+					    strokeDashOffset: path_eip_len
+					}
+				);
+				path_eip.attr("stroke-dashoffset", path_eip_len);
+				path_eip.animate({"stroke-dashoffset": 0}, 1000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout("run_path_eip_1();", 1000);
+				var timer2;
+				if(timer2) clearTimeout(timer2);
+				timer2=setTimeout(function(){
+					path_eip.animate({"stroke-dashoffset": -path_eip_len}, 500, mina.easeinout);
+				}, 2000);				
+			}	
+				
+			function run_path_eip_1(){
+				var snapC = Snap("#svgLine");
+				//var path_eip_1 = snapC.path("m221,219 l-115,0 l0,35");
+				var path_eip_1 = snapC.path("M221,219 L116,219 Q107 219,106 226 L106,254");
+				var path_eip_1_len= path_eip_1.getTotalLength();
+				path_eip_1.attr(
+					{
+					    id: "path_eip_1",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_eip_1_len + " " + path_eip_1_len,
+					    strokeDashOffset: path_eip_1_len
+					}
+				);
+				path_eip_1.attr("stroke-dashoffset", path_eip_1_len);
+				path_eip_1.animate({"stroke-dashoffset": 0}, 1000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_eip_1.animate({"stroke-dashoffset": -path_eip_1_len}, 500, mina.easeinout);
+				}, 1500);
+			}
+
+			function run_path_shome(){
+				var snapC = Snap("#svgLine");
+				//var path_shome = snapC.path("m334,349 l-60,0 l0,101 l-87,0");
+				var path_shome = snapC.path("M335,349 L286,349 Q274 349,274 360 L274,438 Q274 450,265 450 L187,450");
+				var path_shome_len= path_shome.getTotalLength();
+				path_shome.attr(
+					{
+					    id: "path_shome",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_shome_len + " " + path_shome_len,
+					    strokeDashOffset: path_shome_len
+					}
+				);
+				path_shome.attr("stroke-dashoffset", path_shome_len);
+				path_shome.animate({"stroke-dashoffset": 0}, 2000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_shome.animate({"stroke-dashoffset": -path_shome_len}, 1000, mina.easeinout);
+				}, 2000);				
+			}
+
+			function run_path_iso(){
+				var snapC = Snap("#svgLine");
+				//var path_iso = snapC.path("m433,322 l100,0 l0,-95");
+				var path_iso = snapC.path("M433,322 L523,322 Q533 322,533 310 L533,227");
+				var path_iso_len= path_iso.getTotalLength();
+				path_iso.attr(
+					{
+					    id: "path_iso",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_iso_len + " " + path_iso_len,
+					    strokeDashOffset: path_iso_len
+					}
+				);
+				path_iso.attr("stroke-dashoffset", path_iso_len);
+				path_iso.animate({"stroke-dashoffset": 0}, 2000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_iso.animate({"stroke-dashoffset": -path_iso_len}, 1000, mina.easeinout);
+				}, 2000);					
+			}
+
+			function run_path_mt(){ // path metting & trace
+				var snapC = Snap("#svgLine");
+				//var path_mt = snapC.path("m433,347 l88,0");
+				var path_mt = snapC.path("M433,347 L521,347");
+				var path_mt_len= path_mt.getTotalLength();
+				path_mt.attr(
+					{
+					    id: "path_mt",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_mt_len + " " + path_mt_len,
+					    strokeDashOffset: path_mt_len
+					}
+				);
+				path_mt.attr("stroke-dashoffset", path_mt_len);
+				path_mt.animate({"stroke-dashoffset": 0}, 1000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_mt.animate({"stroke-dashoffset": -path_mt_len}, 500, mina.easeinout);
+				}, 2000);	
+			}
+
+			function run_path_meeting(){
+				var snapC = Snap("#svgLine");
+				//var path_meeting = snapC.path("m577,346 l128,0 l0,60 l71,0");
+				var path_meeting = snapC.path("M577,346 L693,346 Q705 346,705 354 L705,393 Q705 406,715 406 L776,406");
+				var path_meeting_len= path_meeting.getTotalLength();
+				path_meeting.attr(
+					{
+					    id: "path_meeting",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_meeting_len + " " + path_meeting_len,
+					    strokeDashOffset: path_meeting_len
+					}
+				);
+				path_meeting.attr("stroke-dashoffset", path_meeting_len);
+				path_meeting.animate({"stroke-dashoffset": 0}, 1000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_meeting.animate({"stroke-dashoffset": -path_meeting_len}, 500, mina.easeinout);
+				}, 1500);					
+			}
+
+			function run_path_trace(){
+				var snapC = Snap("#svgLine");
+				//var path_trace = snapC.path("m552,325 l0,-41 l115,0");
+				var path_trace = snapC.path("M552,325 L552,294 Q552 284,561 284 L667,284");
+				var path_trace_len= path_trace.getTotalLength();
+				path_trace.attr(
+					{
+					    id: "path_trace",
+					    fill: "none",
+					    strokeWidth: "2",
+					    stroke: "red",
+					    strokeDasharray: path_trace_len + " " + path_trace_len,
+					    strokeDashOffset: path_trace_len
+					}
+				);
+				path_trace.attr("stroke-dashoffset", path_trace_len);
+				path_trace.animate({"stroke-dashoffset": 0}, 1000, mina.easeinout);
+				var timer;
+				if(timer) clearTimeout(timer);
+				timer=setTimeout(function(){
+					path_trace.animate({"stroke-dashoffset": -path_trace_len}, 500, mina.easeinout);
+				}, 1500);				
+			}
+		/*
+			$("#page_bg").click(function(){
+				var path = document.querySelector('#test_wire1');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';
+		////
+				var path = document.querySelector('#test_wire2');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';
+		////
+				var path = document.querySelector('#test_wire3');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';
+		////
+				var path = document.querySelector('#test_wire4');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';		
+		////
+				var path = document.querySelector('#test_wire4-1');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';
+		////
+				var path = document.querySelector('#test_wire4-2');
+				var length = path.getTotalLength();
+				// Clear any previous transition
+				path.style.transition = path.style.WebkitTransition =
+				  'none';
+				// Set up the starting positions
+				path.style.strokeDasharray = length + ' ' + length;
+				path.style.strokeDashoffset = length;
+				// Trigger a layout so styles are calculated & the browser
+				// picks up the starting position before animating
+				path.getBoundingClientRect();
+				// Define our transition
+				path.style.transition = path.style.WebkitTransition =
+				  'stroke-dashoffset 2s ease-in-out';
+				// Go!
+				path.style.strokeDashoffset = '0';		
+			});
+		*/
+		</script>
+
+
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="360" height="120"  viewBox="-10 10 360 55" style="top:70px; position:absolute; display:none">
+     <path d="M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5" stroke="#529fd9" stroke-width="2" fill="none" id="wire"></path>
+	<path d="M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5" stroke="red" stroke-width="2" fill="none" id="wireR" style="stroke-dasharray: 1000.88px, 1000.88px; stroke-dashoffset: 1000px;"></path>
+<!--	
+	<circle cx="" cy="" r="8" fill="#529fd9" id="ball">
+		<animateMotion dur="2s" repeatCount="indefinite" begin="click">
+			<mpath xlink:href="#wire"></mpath>
+		</animateMotion>
+	</circle>
+-->
+</svg>
+<script>
+
+	$("#page_bg").click(function(){
+		var path = document.querySelector('#wireR');
+		var length = path.getTotalLength();
+		// Clear any previous transition
+		path.style.transition = path.style.WebkitTransition =
+		  'none';
+		// Set up the starting positions
+		path.style.strokeDasharray = length + ' ' + length;
+		path.style.strokeDashoffset = length;
+		// Trigger a layout so styles are calculated & the browser
+		// picks up the starting position before animating
+		path.getBoundingClientRect();
+		// Define our transition
+		path.style.transition = path.style.WebkitTransition =
+		  'stroke-dashoffset 2s ease-in-out';
+		// Go!
+		path.style.strokeDashoffset = '0';
+	});
+
+</script>
+
+
+<svg id="svg111" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="360" height="120" viewBox="-10 10 360 55" style="top:150px; position:absolute; display:none">
+
+</svg>
+<script>
+	var snapC = Snap("#svg111");
+	var myPathC = snapC.path("M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5");
+	var lenC= myPathC.getTotalLength();
+	myPathC.attr(
+		{
+		    id: "mypath",
+		    fill: "none",
+		    strokeWidth: "2",
+		    stroke: "red",
+		    strokeDasharray: lenC + " " + lenC,
+		    strokeDashOffset: lenC
+		}
+	);
+	myPathC.attr("stroke-dashoffset", lenC);
+	myPathC.animate({"stroke-dashoffset": 0}, 4500, mina.easeinout);
+
+</script>
+
+	</body>
+</html>

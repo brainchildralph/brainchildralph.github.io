@@ -1,0 +1,136 @@
+body { background-color: #eeeeee; }
+
+/*  
+	Align six image divs to form a cube with the sides facing inwards.
+	Viewpoint inside the cube, giving the effect of standing inside the cube looking out.
+	The side of the cube is 600px
+	
+   	CSS3 Coordnate system:
+		X: Left - Right. Increasing moves object right
+		Y: Up - Down. Increasing moves object down
+		Z: In - Out. Increasing Z values moves object towards viewer.
+
+	Inspired by 
+	- https://developer.apple.com/safaridemos/showcase/vr/styles/vr.css
+	- http://www.westciv.com/tools/3Dtransforms/ (Great interactive page to test effect of parameters)
+	- http://www.paulrhayes.com/2009-07/animated-css3-cube-interface-using-3d-transforms/
+
+*/
+
+.container-3d { 
+	position:relative;
+	/*-webkit-perspective: 600;*/ /* Value chosen to look decent. Smaller value, less perspective distortion. */
+	-webkit-perspective: 600; /* Value chosen to look decent. Smaller value, less perspective distortion. */
+}
+
+.position-3d { 
+	position: relative;
+	-webkit-transform-style: preserve-3d; 
+	/* try a translateZ value of about -300 to move viewer outside of the cube */
+	/*-webkit-transform: translateX(0px) translateY(200px) translateZ(600px) rotate3d(1, 0, 0, -10deg); */
+	-webkit-transform: translateX(0px) translateY(200px) translateZ(720px) rotate3d(1, 0, 0, 0deg); 
+}
+
+#cube { 
+	position: relative; 
+	width: 0; 
+	height: 0; 
+	top: 0px; 
+	margin: 0 auto; 
+	-webkit-transform-style: preserve-3d; 
+} 
+
+
+/* 	Cube image faces are 600x600px
+	Rotate sides to face INWARDS (ex. front face must be turned 180deg around the Y axis)
+	and translate them to form a cube.
+*/ 
+
+/*
+img {
+	width: 600;
+	height: 600;
+	border-style: solid;
+    border-width: 3px;
+	border-color: #ff0000;
+}
+*/
+
+.face { 
+	display: block; 
+	height: 600px; 
+	position: absolute; 
+	left: -300px; 
+	top: -200px; /* This is part of aligning the cube so that the viewer is positioned inside, slightly below center */
+	width: 600px;
+	-webkit-backface-visibility: hidden; 
+}
+ 
+.cube-top { 
+	-webkit-transform: translate3d(0, -300px, 0) rotate3d(1, 0, 0, -90deg) rotate3d(0, 0, 1, 90deg); 
+} 
+ 
+.cube-bottom { 
+	-webkit-transform: translate3d(0, 300px, 0) rotate3d(1, 0, 0, 90deg) rotate3d(0, 0, 1, -90deg); 
+}
+
+.cube-front { 
+	-webkit-transform: translate3d(0, 0, 300px) rotate3d(0, 1, 0, 180deg); 
+} 
+ 
+.cube-back { 
+	-webkit-transform: translate3d(0, 0, -300px); 
+} 
+
+.cube-left { 
+	-webkit-transform: translate3d(-300px, 0, 0) rotate3d(0, 1, 0, 90deg); 
+} 
+ 
+.cube-right { 
+	-webkit-transform: translate3d(300px, 0, 0) rotate3d(0, 1, 0, -90deg); 
+} 
+
+
+.cube-no1 { 
+	-webkit-transform: translate3d(0, 0, -519px); 
+	background-color: #aaaaaa;
+} 
+
+.cube-no2 { 
+	-webkit-transform: translate3d(450px, 0, -259px) rotate3d(0, 1, 0, -60deg); 
+	background-color: #bbbbbb;
+} 
+
+.cube-no3 { 
+	-webkit-transform: translate3d(450px, 0, 259px) rotate3d(0, 1, 0, -120deg); 
+	background-color: #cccccc;
+} 
+
+.cube-no4 { 
+	-webkit-transform: translate3d(-450px, 0, -259px) rotate3d(0, 1, 0, 60deg); 
+	background-color: #111111;
+} 
+
+.cube-no5 { 
+	-webkit-transform: translate3d(-450px, 0, 259px) rotate3d(0, 1, 0, 120deg); 
+	background-color: #222222;
+} 
+
+.cube-no6 { 
+	-webkit-transform: translate3d(0, 0, 519px) rotate3d(0, 1, 0, 180deg); 
+	background-color: #333333;
+} 
+
+.cube-no7 { 
+	-webkit-transform: translate3d(0, -300px, 0) rotate3d(1, 0, 0, -90deg) rotate3d(0, 0, 1, 90deg); 
+	background-color: #444444;
+} 
+ 
+/*bottom*/
+.cube-no8 { 
+	width:1200px;
+	height:1200px;
+	-webkit-transform: translate3d(-300px, 0, 0) rotate3d(1, 0, 0, 90deg) rotate3d(0, 0, 1, -90deg); 
+	background-color: #555555;
+}
+

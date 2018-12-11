@@ -1,0 +1,45 @@
+<html xmlns="http://www.w3.org/1999/xhtml" 
+xmlns:og="http://ogp.me/ns#" xmlns:fb="http://www.facebook.com/2008/fbml">
+<head><title>The Rock (1996)</title> 
+<meta property="og:title" content="The Rock"/> 
+<meta property="og:type" content="movie"/> 
+<!--
+<meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/> 
+<meta property="og:image" content="http://ia.media-imdb.com/rock.jpg"/> 
+-->
+<meta property="og:site_name" content="IMDb"/> 
+<meta property="fb:admins" content="hsuehshih"/> 
+<meta property="og:description" content="A group of U.S. Marines, under command of a renegade general, take over Alcatraz and threaten San Francisco Bay with biological weapons."/>
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<script>
+$(document).ready(function(){
+			$.ajax({
+			    url:'http://www.youtube.com/api/timedtext?v=zzfCVBSsvqA&lang=en',
+				type: 'GET',
+				dataType: 'xml',
+				timeout: 1000,
+				crossDomain: true,
+				error: function(xml){
+					alert("err: "+xml);
+				},
+				success: function(xml){
+					console.log("xxxxxxxx");
+					console.log(xml);
+				}
+			}); 
+$( window ).keydown(function( event ) {
+  if ( event.which == 13 ) {
+     event.preventDefault();
+  }
+  console.log( event );
+});
+		$('head').append('<meta property="og:url" content="http://www.imdb.com/title/tt0117500/"/> ');
+		$('head').append('<meta property="og:image" content="http://ia.media-imdb.com/rock.jpg"/> ');
+//		$('head').append('<meta property="og:image" content="http://mywebsite.com/uploads/someimage.jpg"; />') 
+});
+</script>
+</head>
+<body>
+<h1>OG Test!!!!!</h1>
+</body>
+</html>

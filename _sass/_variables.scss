@@ -1,0 +1,17 @@
+// Bootstrap
+$code-font-size:      80% !default;
+//$primary:           #960b0b !default;
+//$primary:             #b77f7f !default;
+$gold-dark:           rgb(199,179,14) !default;
+$navbar-light-color:                rgba($gold-dark,.5) !default;
+$navbar-light-hover-color:          rgba($gold-dark,.7) !default;
+$navbar-light-disabled-color:       rgba($gold-dark,.3) !default;
+$navbar-light-active-color: #b77f7f !default;
+
+// Font Awesome
+$fa-font-path:        "../fonts/font-awesome";
+
+// Lightbox images
+$lightbox-img-path: unquote("../img/lightbox");
+
+
