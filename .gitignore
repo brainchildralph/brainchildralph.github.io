@@ -1,3 +1,6 @@
 _site
 .sass-cache
 .jekyll-metadata
+liquid.md
+test.md
+test/aws/test/
