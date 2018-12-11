@@ -1,0 +1,2137 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base target="_top">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/themes/smoothness/jquery-ui.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.3/jquery-ui.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.css" rel="stylesheet">
+<!--
+    <script src="//code.angularjs.org/snapshot/angular.min.js"></script>
+-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular.js"></script>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <title>Tubetag Dev</title>
+  </head>
+  <body ng-app="app" class="container">
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '773209436141584',
+      xfbml      : true,
+      version    : 'v2.4'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>
+
+
+  <div class="theme-showcase">
+	  <div class="fb-like" data-share="true"data-width="450" data-show-faces="true"></div>
+      <tubetagrepeaterroot></tubetagrepeaterroot>
+  </div>
+  <style>
+  .scriptfont {
+    font-size:16px;
+  }
+  .scriptfontsel {
+    font-size:16px;
+    color:blue;
+  }
+  </style>
+  <script>
+  function ytf_loadScriptBylangcode(vid, code, func){
+    var transcriptArray=[]; 
+    $.ajax({
+      url:'https://www.youtube.com/api/timedtext?type=list&v='+vid,
+      type: 'GET',
+      dataType: 'xml',
+      timeout: 5000,
+      crossDomain: true,
+      error: function(xml){
+        //alert("err: "+xml);
+      },
+      success: function(xml){
+        var name=[];
+        var lang_code=[];
+        var i;
+        $(xml).find("track").each(function(i){
+          name.push($(this).attr("name"));
+          //console.log("name["+i+"]: "+name[i]);
+          if(typeof(name[i])=='undefined') name[i]='';
+          lang_code.push($(this).attr("lang_code"));
+        });
+        if(lang_code.length==0){
+          if(func!==undefined){
+            func(transcriptArray);
+            return; 
+          }
+        }
+		//console.log('find lang_code "'+code+'"');
+        for(i=0; i<lang_code.length; i++){
+          if(lang_code[i].indexOf(code)!==-1){
+			console.log("find lang_code success!!");
+            break;
+          }
+        }
+        if(i==lang_code.length){
+		  console.log("find lang_code failed!!");
+          i=0;
+        }
+        //console.log('lang_code: "'+lang_code[i]+'", name: "'+name[i]+'"');
+        $.ajax({
+          url:'https://www.youtube.com/api/timedtext?v='+vid+'&lang='+lang_code[i]+'&name='+name[i],
+          type: 'GET',
+          dataType: 'xml',
+          timeout: 1000,
+          crossDomain: true,
+          error: function(xml){
+            if(func!==undefined){
+              func(transcriptArray);
+            }
+          },
+          success: function(xml){
+            scriptArray=[];
+            $(xml).find("text").each(function(i){
+              var startTime=0, dur=0;
+              var endTime=0;
+              var scriptData={}; 
+              startTime=parseFloat($(this).attr("start"));
+              dur=parseFloat($(this).attr("dur"));
+              startTime=parseFloat(startTime.toFixed(3));
+              dur=parseFloat(dur.toFixed(3));
+              endTime=startTime+dur;
+              endTime=parseFloat(endTime);
+              endTime=parseFloat(endTime.toFixed(3));
+              scriptData.pid=i;
+              scriptData.start=startTime; 
+              scriptData.end=endTime; 
+              scriptData.text=$(this).text(); 
+              transcriptArray.push(scriptData);
+            });
+            if(func!==undefined){
+              func(transcriptArray);
+            }
+          }
+        });
+      }
+    });
+  }
+
+  function ytf_loadVideoList(func){
+    $.ajax({
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'target':'videolist',
+        'user':'test user',
+        'type':'default',
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_loadLearningScript(vid,func){
+    $.ajax({
+//      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'target':'learningscript',
+        'user':'test user',
+        'vid':vid,
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_addLearningScript(vid,data,func){
+    $.ajax({
+//      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'add',
+        'target':'learningscript',
+        'user':'test user',
+        'vid':vid,
+        'data':JSON.stringify(data)
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_delLearningScript(vid,no,func){
+    $.ajax({
+      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'del',
+        'target':'learningscript',
+        'user':'test user',
+        'vid':vid,
+        'no':no
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_setLearningScript(vid,no,data,func){
+    $.ajax({
+//      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'set',
+        'target':'learningscript',
+        'user':'test user',
+        'vid':vid,
+        'no':no,
+        'data':JSON.stringify(data)
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_loadSheetData(s,func){
+    $.ajax({
+      url: 'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'sheet':s
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+  function ytf_loadSheetDataByKey(s,k,v,func){
+    $.ajax({
+//      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'sheet':s,
+        'key':k,
+        'val':v
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+  function ytf_saveSheetDataByKey(s,k,v,d,func){
+    $.ajax({
+//      url:'https://script.google.com/macros/s/AKfycbwd8EC1nxHQJwkjnS4gdIROsSdyJczWe8xqS88sbqg/dev',
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'set',
+        'sheet':s,
+        'key':k,
+        'val':v,
+        'data':d
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+  function ytf_saveSheetData(s,r,func){
+    $.ajax({
+      url: 'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'set',
+        'sheet':s,
+        'rowdata':r
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  var searchurl='https://script.google.com/macros/s/AKfycbxVA42do1rnPg7N66SDqtuxNT47qaT8ab-9qULy8MyMm7gcEjC2/exec';
+  function ytf_searchVideoList(d,func){
+    var dataVar={
+      'act':'get',
+      'key':d.key,
+      'cc':d.cc,
+      'regcode':d.regcode,
+      'pageno':d.pageno
+    };
+    if(d.token!==undefined){
+      dataVar.token=d.token; 
+    }
+    $.ajax({
+      url: searchurl,
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:dataVar,
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+  function ytf_translateScripts(f,t,s,func){
+    $.ajax({
+      url: 'https://script.google.com/macros/s/AKfycbxrRFGsxo1cqIxAV_OJ57PVN1UNGLLIShQdgz5Fci4xo5oA-Kii/exec',
+//      url:'https://script.google.com/macros/s/AKfycbzgRmpsUWeN5P-fDYKv6bEXQYpKJfyMJbfFeboqOyAO/dev',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'from':f,
+        'to':t,
+        'scripts':s
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+</script>
+<script type='text/ng-template' id='ytroot.html'>
+<!--   ////////////      NAV TAB     /////////////   -->
+  <ul class="nav nav-tabs">
+    <li class="active"><a data-toggle="tab" href="#home" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'home'})">Home</a></li>
+    <li id="search_tab"><a data-toggle="tab" href="javascript:void(0)" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'search'})">Search</a></li>
+    <li><a data-toggle="tab" href="javascript:void(0)" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'player'})">Player</a></li>
+    <li><a data-toggle="tab" href="javascript:void(0)" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'transcript'})">Transcript</a></li>
+    <li><a data-toggle="tab" href="javascript:void(0)" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'learning'})">Learning</a></li>
+  </ul>
+<!--
+  <div class="col-xs-12">
+    <button class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'search'})">Search Page</button>
+    <button class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'player'})">Player Page</button>
+    <button class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'tab','tab':'transcript'})">Transcript Page</button>
+    <hr>
+  </div>
+-->
+<!--   ///////////     Play Controller   /////////   -->
+  <div class="col-xs-12">
+    <br>
+	<button data-toggle="collapse" data-target="#playcontroller" class="btn btn-warning">Player Controller</button>
+  </div>
+  <div id="playcontroller" class="col-xs-12 collapse">
+    <ytlistroot db="vm.ytlistdb" cb="vm.ytlistcb(d)"></ytlistroot>
+	Youtube URL or VID: <input ng-model="vm.rootdb.vid" type="text" ng-change="vm.rootcb({'act':'change','target':'vid','tab':vm.rootdb.vid})"></input>
+	<br>
+	<button ng-show="vm.ytplayerdb.player.state=='buffer' || vm.ytplayerdb.player.state=='play' ? false : true" class="btn btn-default" ng-click="vm.ytplayercb({'act':'playerctrl','ctrl':'play'})">
+	<i class="glyphicon glyphicon-play"></i>
+	</button>
+	<button ng-show="vm.ytplayerdb.player.state!=='buffer' && vm.ytplayerdb.player.state!=='play' ? false : true" class="btn btn-default" ng-click="vm.ytplayercb({'act':'playerctrl','ctrl':'pause'})">
+	<i class="glyphicon glyphicon-pause"></i>
+	</button>
+	<button class="btn btn-default" ng-click="vm.ytplayercb({'act':'playerctrl','ctrl':'back5s'})">
+	-5
+	</button>
+	Repeat: <input ng-model="vm.rootdb.loop" ng-change="vm.rootcb({'act':'change','target':'loop'})" type="checkbox" ng-true-value="1" ng-false-value="0"></input>
+	&nbsp;
+    Debug: <input ng-model="vm.rootdb.debug" type="checkbox" ng-true-value="1" ng-false-value="0"></input>
+	<button ng-show="vm.rootdb.translate.ready == 1 ? false:true " ng-disabled="vm.rootdb.translate.lock == 1 ? true:false" class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'repeater','ctrl':'T'})">
+    翻譯成中文字幕
+	</button>
+    &nbsp;
+    <br>
+	<button class="btn btn-primary" ng-show="vm.rootcb({'act':'show','target':'repeater','ctrl':'A'})" ng-click="vm.rootcb({'act':'click','target':'repeater','ctrl':'A'})">
+	A<br><div style="font-size:8px"><i class="glyphicon glyphicon-play"></i> + Set start time</div>
+	</button>
+	<button class="btn btn-success" ng-show="vm.rootcb({'act':'show','target':'repeater','ctrl':'B'})" ng-click="vm.rootcb({'act':'click','target':'repeater','ctrl':'B'})">
+	B<br><div style="font-size:8px">Set end time + <i class="glyphicon glyphicon-repeat"></i></div>
+	</button>
+	<button class="btn btn-warning" ng-show="vm.rootcb({'act':'show','target':'repeater','ctrl':'C'})" ng-click="vm.rootcb({'act':'click','target':'repeater','ctrl':'C'})">
+	C<br><div style="font-size:8px">(Cancel loop)</div>
+	</button>
+  </div>
+<!--   /////////////  Keyword Search  ////////////   -->
+  <div class="col-xs-12" ng-show="vm.rootcb({'act':'show','target':'tab','tab':'search'})">
+    <h3>Search Video</h3>
+    <hr>
+    <div class="input-group col-md-6">
+      <input class="form-control" type="text" ng-model="vm.rootdb.keyword" ng-blur="vm.rootcb({'act':'blur','target':'search'})" ng-keypress="vm.rootcb({'act':'keypress','target':'search','event':$event})"></input>
+      <div class="input-group-btn">
+      <button class="btn btn-default" ng-class="vm.rootcb({'act':'class','target':'search'})" ng-click="vm.rootcb({'act':'click','target':'search'})"><i class="glyphicon glyphicon-search"></i></button>
+      </div>
+    </div>
+    <br>
+	cc: <input ng-model="vm.rootdb.cc" type="checkbox" ng-true-value="1" ng-false-value="0"></input><br>
+	Page No.: <input type="button" class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'backpage'})" ng-class="vm.rootcb({'act':'class','target':'backpage'})" value="<"></input>
+<!--
+	<input type="text" ng-model="vm.rootdb.pageno" ng-blur="vm.rootcb({'act':'blur','target':'pageno'})" maxlength="2"></input>
+-->
+	&nbsp;{{vm.rootdb.pageno}}&nbsp;
+	<input type="button" class="btn btn-default" ng-click="vm.rootcb({'act':'click','target':'nextpage'})" ng-class="vm.rootcb({'act':'class','target':'nextpage'})" value=">"></input>
+	<br>
+	<div ng-show="vm.rootdb.debug">
+	  List Ready: {{vm.ytsearchdb.listready == 1 ? "Ready!!" : "Not Ready!!"}}<br>
+	</div>
+    Search Result: <br>
+    <div style="height:300px;overflow-y:scroll" class="col-xs-12">
+      <ytsearchroot db="vm.ytsearchdb" cb="vm.ytsearchcb(d)"></ytsearchroot>
+    </div>
+  </div>
+<!--   ///////////     YT Player       ///////////   -->
+  <div class="col-xs-12" ng-show="vm.rootcb({'act':'show','target':'tab','tab':'player'})">
+    <h3>{{vm.ytplayerdb.player.title}}</h3>
+	<hr>
+	<div ng-show="vm.rootdb.debug">
+	  YTID for ytplayer: <input ng-model="vm.ytplayerdb.player.ytid" type="text"></input><br>
+	  VID for ytplayer: <input ng-model="vm.ytplayerdb.player.vid" type="text"></input><br>
+	  Monitor Start for ytplayer: <input ng-click="vm.ytplayerdb.player.monitorStart()" type="button" value="Start Monitor"></input><br>
+	  Monitor Stop for ytplayer: <input ng-click="vm.ytplayerdb.player.monitorStop()" type="button" value="Stop Monitor"></input><br>
+	  Start for ytplayer: <input ng-model="vm.ytplayerdb.player.startTime" type="text"></input><br>
+	  End for ytplayer: <input ng-model="vm.ytplayerdb.player.endTime" type="text"></input><br>
+	  Curr: {{vm.ytplayerdb.player.currTime}}, Duration: {{vm.ytplayerdb.player.duration}}<br> 
+	  State for ytplayer: {{vm.ytplayerdb.player.state}}<br>
+	  Repeat for ytplayer: <input ng-model="vm.ytplayerdb.player.loop" type="checkbox" ng-true-value="1" ng-false-value="0"></input><br>
+	  Player State for ytplayer: <input ng-model="vm.ytplayerdb.player.state" type="text"></input><br>
+	</div>
+	<ytplayerroot class="col-sm-6 col-xs-12" db="vm.ytplayerdb" cb="vm.ytplayercb(d)"></ytplayerroot>
+  </div>
+<!--   ///////////////////////////////////////////   -->
+  <div class="col-xs-12" ng-show="vm.rootcb({'act':'show','target':'tab','tab':'transcript'})">
+    <h3>Transcript</h3>
+	<hr>
+	<div ng-show="vm.rootdb.debug">
+	  VID for ytscript: <input ng-model="vm.ytscriptdb.vid" type="text"></input><br>
+	  PID for ytscript: <input ng-model="vm.ytscriptdb.pid" ng-blur="vm.pidchange()" type="text"></input><br>
+	  Repeat for ytscript: <input ng-model="vm.ytscriptdb.player.loop" type="checkbox" ng-true-value="1" ng-false-value="0"></input><br>
+	  Player State for ytscript: <input ng-model="vm.ytscriptdb.player.state" type="text"></input><br>
+	</div>
+	<ytscriptroot db="vm.ytscriptdb" cb="vm.ytscriptcb(d)"></ytscriptroot>
+  </div>
+<!--   ///////////////////////////////////////////   -->
+  <div class="col-xs-12" ng-show="vm.rootcb({'act':'show','target':'tab','tab':'learning'})">
+    <ytlearnscriptroot ng-disabled="vm.ytlearnscriptdb.scriptsready == 1 ? false:true" db="vm.ytlearnscriptdb" cb="vm.ytlearnscriptcb(d)"></ytlearnscriptroot>
+  </div>
+</script>
+
+<script>
+  var app=angular.module('app', [])
+  .component('tubetagrepeaterroot', {
+    templateUrl:'ytroot.html',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+        this.rootcb=function(d){
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              this.rootdb={
+                tab:'home',
+                pageno:1,
+                keyword:'english kid song',
+                cc:1,
+                vid:'',
+                debug:false,
+                repeater:{
+                  ctrl:'C',
+                },
+                translate:{
+                  lock:0,
+                  ready:0,
+                },
+              }; 
+/*
+              setTimeout(function(){
+                vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW'}});
+                $scope.$apply();
+              }, '1000'); 
+              setTimeout(function(){
+                vm.rootdb.vid='jExYHd1yyWc'; 
+                vm.ytplayerdb.player.vid=vm.rootdb.vid; 
+                vm.ytscriptdb.vid=vm.rootdb.vid;
+                vm.ytlearnscriptdb.vid=vm.rootdb.vid;
+                $scope.$apply();
+              }, 100);
+*/
+            }
+            break; 
+            case 'class': {
+              if(d.target=='nextpage'){
+                if(vm.ytsearchdb.listready==0) return 'disabled'; 
+                if(vm.ytsearchdb.list.data.totalResults<25){
+                  return 'disabled'; 
+                }else{
+                  return ''; 
+                }
+              }
+              if(d.target=='backpage'){
+                if(vm.ytsearchdb.listready==0) return 'disabled'; 
+                if(vm.rootdb.pageno==1){
+                  return 'disabled'; 
+                }else{
+                  return ''; 
+                }
+              }
+              if(d.target=='search'){
+                //if(vm.ytsearchdb.listready==0) return 'disabled'; 
+                return ''; 
+              }
+            }
+            break; 
+            case 'click': {
+              if(d.target=='nextpage'){
+                if(vm.ytsearchdb.listready==0) return; 
+                vm.rootdb.pageno++; 
+                vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW','token':vm.ytsearchdb.list.data.nextPageToken}});
+              }
+              if(d.target=='backpage'){
+                if(vm.ytsearchdb.listready==0) return; 
+                vm.rootdb.pageno++; 
+                vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW','token':vm.ytsearchdb.list.data.prevPageToken}});
+              }
+              if(d.target=='search'){
+                vm.rootdb.pageno=1; 
+                if(vm.rootdb.keyword!=='')
+                  vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW'}});
+              }
+              if(d.target=='listitemimg'){
+                vm.rootcb({'act':'change','target':'vid','vid':d.vid});
+                vm.rootcb({'act':'click','target':'tab','tab':'home'});
+                setTimeout(function(){
+                  $("#search_tab").removeClass('active')
+                }, 200);
+              }
+              if(d.target=='tab'){
+                console.log("change tab!!");
+/*
+                setTimeout(function(){
+                  console.log($('ytplayerroot').width());
+                }, 1000);
+*/
+                vm.rootdb.tab=d.tab; 
+              }
+              if(d.target=='repeater'){
+                if(d.ctrl=='A'){
+                  vm.rootdb.loop=0; 
+                  vm.ytplayerdb.player.loop=0; 
+                  vm.ytscriptdb.player.loop=0;
+                  vm.ytplayerdb.player.startTime=vm.ytplayerdb.player.currTime; 
+                  vm.ytplayerdb.player.ytplayer.playVideo();
+                  vm.rootdb.repeater.ctrl=d.ctrl;
+                }
+                if(d.ctrl=='B'){
+                  vm.ytplayerdb.player.endTime=vm.ytplayerdb.player.currTime; 
+                  vm.rootdb.loop=1; 
+                  vm.ytplayerdb.player.loop=1; 
+                  vm.ytscriptdb.player.loop=1;
+                  vm.rootdb.repeater.ctrl=d.ctrl;
+                }
+                if(d.ctrl=='C'){
+                  vm.ytplayerdb.player.loop=0; 
+                  vm.ytscriptdb.player.loop=0;
+                  vm.rootdb.repeater.ctrl=d.ctrl;
+                }
+                if(d.ctrl=='T'){
+                  var scripts=[]; 
+                  var new_scripts=[]; 
+                  var id=0, range=5; 
+                  vm.rootdb.translate.lock=1; 
+                  if((vm.ytscriptdb.scripts.length-id)<range) range=vm.ytscriptdb.scripts.length-id; 
+                  for(var i=id; i<id+range; i++){
+                    scripts.push(vm.ytscriptdb.scripts[i].text);
+                  }
+                  ytf_translateScriptsLarge(scripts, id);
+                  id+=range; 
+                  function ytf_translateScriptsLarge(scripts, id){
+                    ytf_translateScripts('en','zh-TW',JSON.stringify(scripts), function(data){
+                      scripts=data.data;
+                      for(var i=0; i<scripts.length; i++) new_scripts.push(scripts[i]);
+                      id+=range; 
+                      if(id<vm.ytscriptdb.scripts.length){
+                        scripts=[];
+                        if((vm.ytscriptdb.scripts.length-id)<range){
+                          range=vm.ytscriptdb.scripts.length-id; 
+                        }
+                        for(var i=id; i<id+range; i++){
+                          scripts.push(vm.ytscriptdb.scripts[i].text);
+						}
+                        ytf_translateScriptsLarge(scripts,id);
+                      }else{
+                        console.log('translate done!!');
+                        vm.rootdb.translate.lock=0; 
+                        vm.rootdb.translate.ready=1; 
+                        console.log(new_scripts);
+                        for(var i=0; i<vm.ytscriptdb.scripts.length; i++){
+                          vm.ytscriptdb.scripts[i].translate=new_scripts[i];
+                          //vm.ytscriptdb.scripts[i].text=new_scripts[i];
+                          //console.log(vm.ytscriptdb.scripts);
+                          $scope.$apply();
+                        }
+                      }
+                    })
+                  }
+                }
+              }
+            }
+            break; 
+            case 'blur': {
+/*
+              if(d.target=='search'){
+                vm.rootdb.pageno=1; 
+                if(vm.rootdb.keyword!=='')
+                  vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW'}});
+              }
+              if(d.target=='pageno'){
+                if(vm.rootdb.keyword!=='')
+                  vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW'}});
+              }
+*/
+            }
+            break; 
+            case 'keypress': {
+              if(d.event.which==13){
+                if(d.target=='search'){
+				  vm.rootdb.pageno=1; 
+				  if(vm.rootdb.keyword!=='')
+				    vm.ytsearchcb({'act':'loadlist','d':{'key':vm.rootdb.keyword,'cc':vm.rootdb.cc,'pageno':vm.rootdb.pageno,'regcode':'TW'}});
+				}
+              }
+            }
+            break; 
+            case 'show': {
+              var target=(d.target==undefined?'':d.target); 
+              if(target=='tab'){
+                var tab=(d.tab==undefined?'':d.tab); 
+                if(vm.rootdb.tab==tab){
+                  return true; 
+                }else if((vm.rootdb.tab=='home')&&(tab=='player'||tab=='transcript')){
+                  return true; 
+                }else if((vm.rootdb.tab=='learning')&&(tab=='player'||tab=='learning')){
+                  return true; 
+                }else{
+                  return false; 
+                }
+              }
+              if(target=='repeater'){
+                var ctrl=(d.ctrl==undefined?'':d.ctrl); 
+                if(vm.rootdb.repeater.ctrl=='C'){
+                  if(ctrl=='A'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+                if(vm.rootdb.repeater.ctrl=='A'){
+                  if(ctrl=='B'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+                if(vm.rootdb.repeater.ctrl=='B'){
+                  if(ctrl=='C'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+              }
+              if(target=='repeaterx'){
+                var ctrl=(d.ctrl==undefined?'':d.ctrl); 
+                console.log(ctrl);
+                if(vm.rootdb.repeater.ctrl=='C'){
+                  if(ctrl=='A'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+                if(vm.rootdb.repeater.ctrl=='A'){
+                  if(ctrl=='B'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+                if(vm.rootdb.repeater.ctrl=='B'){
+                  if(ctrl=='C'){
+                    return true; 
+                  }else{
+                    return false; 
+                  }
+                }
+              }
+            }
+            break; 
+            case 'change': {
+              var target=(d.target==undefined?'':d.target); 
+              if(target=='loop'){
+                this.ytplayerdb.player.loop=this.rootdb.loop;
+                this.ytscriptdb.player.loop=this.rootdb.loop;
+                if(this.rootdb.loop==1){
+                  if(vm.ytscriptdb.script_curr.pid!==-1){
+                    vm.ytplayerdb.player.startTime=vm.ytscriptdb.script_curr.start;
+                    vm.ytplayerdb.player.endTime=vm.ytscriptdb.script_curr.end;
+                  }
+                }
+              }
+              if(d.target=='vid'){
+                if(d.vid!==undefined){
+                  vm.rootdb.vid=d.vid; 
+                  vm.ytplayerdb.player.vid=d.vid;
+                  vm.ytscriptdb.vid=d.vid;
+                  vm.ytlearnscriptdb.vid=d.vid;
+                }else{
+                  vm.ytplayerdb.player.vid=vm.rootdb.vid; 
+                  vm.ytscriptdb.vid=vm.rootdb.vid;
+                  vm.ytlearnscriptdb.vid=vm.rootdb.vid;
+                }
+              }
+            }
+            break; 
+          }
+        }
+        this.rootcb({'act':'initdb'});
+        this.ytplayercb=function(d){
+          //console.log(d);
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              vm.ytplayerdb={
+                iframeready:0,
+                player:{
+                  ytid:'',
+                  ytid_pre:'',
+                  vid:'',
+                  vid_pre:'',
+                  title:'',
+                  ready:0,
+                  loop:0,
+                  state:'unstarted',
+                  startTime:0,
+                  endTime:0,
+                  duration:0,
+                  currTime:0,
+                  waitTime:500,
+                  monitorIntvl:100,
+                  monitorStart:function(){
+                    vm.ytplayerdb.player.monitorStop();
+                    var startTime=parseFloat(vm.ytplayerdb.player.startTime);
+                    var endTime=parseFloat(vm.ytplayerdb.player.endTime);
+                    var currTime=0; 
+                    if(vm.ytplayerdb.player.ready==1){
+                      currTime=parseFloat(vm.ytplayerdb.player.ytplayer.getCurrentTime());
+                      if(vm.ytplayerdb.player.loop==1){
+                        if((currTime>endTime)&&(endTime>startTime)){
+                          if(vm.ytplayerdb.player.waitTime>0){
+  				            vm.ytplayerdb.player.ytplayer.pauseVideo();
+  				            vm.ytplayerdb.player.ytplayer.seekTo(startTime);
+                            setTimeout(function(){
+                              if(vm.ytplayerdb.player.state!='play'){
+                                if(vm.ytplayerdb.player.loop==1){
+                                  vm.ytplayerdb.player.ytplayer.playVideo();
+                                }
+                              }
+                            }, vm.ytplayerdb.player.waitTime); 
+                          }else{
+  				            vm.ytplayerdb.player.ytplayer.seekTo(startTime);
+                            if(vm.ytplayerdb.player.state!='play'){
+                              if(vm.ytplayerdb.player.loop==1){
+                                vm.ytplayerdb.player.ytplayer.playVideo();
+                              }
+                            }
+                          }
+                        }
+                        if(currTime.toFixed(2)<startTime.toFixed(2)){
+                          if(vm.ytplayerdb.player.waitTime>0){
+  				            vm.ytplayerdb.player.ytplayer.pauseVideo();
+  				            vm.ytplayerdb.player.ytplayer.seekTo(startTime);
+                            setTimeout(function(){
+                              if(vm.ytplayerdb.player.state!='play'){
+                                if(vm.ytplayerdb.player.loop==1){
+                                  vm.ytplayerdb.player.ytplayer.playVideo();
+                                }
+                              }
+                            }, vm.ytplayerdb.player.waitTime); 
+                          }else{
+  				            vm.ytplayerdb.player.ytplayer.seekTo(startTime);
+                            if(vm.ytplayerdb.player.state!='play'){
+                              if(vm.ytplayerdb.player.loop==1){
+                                vm.ytplayerdb.player.ytplayer.playVideo();
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    vm.ytplayerdb.player.monitorTimer=setTimeout(function(){
+                      if(vm.ytplayerdb.player.ready==1){
+                        vm.ytplayerdb.player.currTime=currTime;
+                        var s=vm.ytscriptcb({'act':'getcurrscript','curr':currTime}); 
+                        if(s){
+                          //console.log(s);
+                          if(s.pid!==vm.ytscriptdb.pid){
+                            vm.ytscriptdb.pid=s.pid; 
+                            vm.ytscriptdb.script_curr=s;
+                          }
+                        }
+                        $scope.$apply();
+                      }
+                      vm.ytplayerdb.player.monitorStart();
+                    }, vm.ytplayerdb.player.monitorIntvl);
+                  },
+                  monitorStop:function(){
+                    if(vm.ytplayerdb.player.monitorTimer){
+                      clearTimeout(vm.ytplayerdb.player.monitorTimer);
+                    }
+                  }
+                }
+              }; 
+            }
+            break; 
+            case 'loadytiframe': {
+              if(window.onYouTubeIframeAPIReady==undefined){
+                window.onYouTubeIframeAPIReady=function(){
+      			  $scope.$apply(function(){
+                    console.log('window.onYouTubeIframeAPIReady is ready!!'); 
+                    vm.ytplayerdb.iframeready=1; 
+                  });
+      		    }
+                $.getScript("https://www.youtube.com/iframe_api", function(data, textStatus){
+                  console.log("youtube script get!!");
+                });
+              }else{
+                console.log('window.onYouTubeIframeAPIReady is already ready!!'); 
+                vm.ytplayerdb.iframeready=1; 
+              }
+            }
+            break; 
+            case 'createytid':{
+      	      var text = "";
+              var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+              for( var i=0; i < 5; i++ )
+                text+=possible.charAt(Math.floor(Math.random()*possible.length));
+              return text;
+            }
+            break; 
+            case 'loadytid': {
+              vm.ytplayerdb.player.ytid=vm.ytplayercb({'act':'createytid'}); 
+            }
+            break; 
+            case 'loadytplayer': {
+              //console.log(d.ytid);
+              if(vm.ytplayerdb.player.ytplayer!==undefined){ 
+                vm.ytplayerdb.player.monitorStop(); 
+                vm.ytplayerdb.player.ytplayer.destroy();
+              }
+              vm.ytplayerdb.player.ytid=d.ytid; 
+              vm.ytplayerdb.player.startTime=0; 
+              vm.ytplayerdb.player.endTime=0; 
+              vm.ytplayerdb.player.currTime=0; 
+              var h=Math.round($("#"+d.ytid).parent().width()*9/16*1);
+              var w=Math.round($("#"+d.ytid).parent().width()*1);
+              vm.ytplayerdb.player.ytplayer=new YT.Player(d.ytid, {
+                height:h,
+                width:w,
+                videoId:vm.ytplayerdb.player.vid,
+                playerVars: {
+                  //controls: 0,
+                  iv_load_policy: 3, // Disables annotations.
+                  playsinline:1, //play inline 
+                  showinfo:1, // show info when ready
+                  //start:20,
+                  //end:25,
+                  //autoplay:1
+                }
+              });
+              vm.ytplayerdb.player.ytplayer.addEventListener('onReady', function(e){
+                //console.log("onReady");
+                //vm.ytplayerdb.player.ytplayer.setPlaybackQuality('hd720');
+                $scope.$apply(function(){
+                  vm.ytplayerdb.player.ready=1; 
+                  vm.ytplayerdb.player.duration=e.target.getDuration(); 
+                  vm.ytplayerdb.player.title=e.target.getVideoData().title;
+                  vm.ytplayerdb.player.ytplayer.cueVideoById({'videoId': vm.ytplayerdb.player.vid,'suggestedQuality':'hd720'});
+                });
+              });
+              vm.ytplayerdb.player.ytplayer.addEventListener('onStateChange', function(e){
+                $scope.$apply(function(){
+                  var state='unstarted'; 
+                  if(e.data==1){
+                    state='play'; 
+                  }
+                  if(e.data==2){
+                    state='pause'; 
+                    vm.ytplayerdb.player.monitorStop(); 
+                  }else{
+                    vm.ytplayerdb.player.monitorStart(); 
+                  }
+                  if(e.data==3){
+                    state='buffer'; 
+                  }
+                  if(e.data==5){
+                    state='cue'; 
+                  }
+                  vm.ytplayerdb.player.state=state; 
+                  vm.ytscriptcb({'act':'setplayerstate','state':state});
+/*
+                  if(vm.ytplayerdb.player.state!==state){
+                    vm.ytplayerdb.player.state=state; 
+                    vm.ytscriptcb({'act':'setplayerstate','state':state});
+                  }
+*/
+                });
+              });
+            }
+            break; 
+            case 'cuevid': {
+              if(vm.ytplayerdb.player.ready==1){
+                vm.ytplayerdb.player.vid=d.vid;
+                vm.ytplayerdb.player.ytplayer.cueVideoById(d.vid);
+              }
+            }
+            break; 
+            case 'playerctrl': {
+              if(d.ctrl=='play'){
+                //if(vm.ytplayerdb.player.state=='unstarted') vm.ytplayerdb.player.ytplayer.playVideo();
+                if(d.start!==undefined) vm.ytplayerdb.player.startTime=parseFloat(d.start); 
+                if(d.end!==undefined) vm.ytplayerdb.player.endTime=parseFloat(d.end); 
+                if(d.start!==undefined) vm.ytplayerdb.player.ytplayer.seekTo(parseFloat(d.start),1);
+                vm.ytplayerdb.player.ytplayer.playVideo();
+/*
+                setTimeout(function(){
+                  vm.ytplayerdb.player.ytplayer.seekTo(d.start);
+                  if(vm.ytplayerdb.player.state!='play'){
+                    vm.ytplayerdb.player.ytplayer.playVideo();
+                  }
+                }, 100);
+*/
+              }
+              if(d.ctrl=='back5s'){
+                vm.ytplayerdb.player.ytplayer.seekTo(parseFloat(vm.ytplayerdb.player.currTime)-5);
+                vm.ytplayerdb.player.ytplayer.playVideo();
+                if(vm.ytplayerdb.player.startTime<0) vm.ytplayerdb.player.startTime=0; 
+              }
+              if(d.ctrl=='pause'){
+                if(d.start!==undefined) vm.ytplayerdb.player.startTime=parseFloat(d.start); 
+                if(d.end!==undefined) vm.ytplayerdb.player.endTime=parseFloat(d.end); 
+                vm.ytplayerdb.player.ytplayer.pauseVideo();
+              }
+            }
+            break; 
+          }
+        }
+        this.ytscriptcb=function(d){
+          //console.log(d);
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              vm.ytscriptdb={
+                vid:'',
+                vid_pre:'',
+                pid:-1,
+                scripts:[],
+                script_curr:{pid:-1},
+                player:{
+                  loop:0,
+                  state:'unstarted',
+                }
+              }; 
+            }
+            break; 
+            case 'loadscript': {
+              vm.ytscriptdb.scripts=[]; 
+              vm.ytscriptdb.pid=-1; 
+              vm.ytscriptdb.script_curr={pid:-1};
+              function parseHtmlEnteties(str) {
+				return str.replace(/&#([0-9]{1,3});/gi, function(match, numStr) {
+				  var num = parseInt(numStr, 10); // read num as normal number
+				  return String.fromCharCode(num);
+				});
+			  }
+              ytf_loadScriptBylangcode(vm.ytscriptdb.vid,'en',function(s){
+                $scope.$apply(function(){
+                  for(var i=0; i<s.length; i++){
+                    s[i].text=parseHtmlEnteties(s[i].text);
+                    s[i].translate=''; 
+                  }
+                  vm.ytscriptdb.scripts=s; 
+                  vm.pidinput=-1; 
+                  vm.rootdb.translate.ready=0; 
+                  //console.log(s);
+                  //vm.rootcb({'act':'click','target':'repeater','ctrl':'T'});
+                });
+              });
+            }
+            break; 
+            case 'playerstate': {
+              return vm.ytscriptdb.player.state; 
+            }
+            break; 
+            case 'setplayerstate': {
+              vm.ytscriptdb.player.state=d.state; 
+            }
+            break; 
+            case 'getcurrscript': {
+              var curr=parseFloat(d.curr);
+              for(var i=0; i<vm.ytscriptdb.scripts.length; i++){
+                var startTime=parseFloat(vm.ytscriptdb.scripts[i].start);
+                var endTime=parseFloat(vm.ytscriptdb.scripts[i].end);
+                if(curr>=startTime){
+                  if(curr<endTime){
+                    return vm.ytscriptdb.scripts[i]; 
+                  }
+                }
+              }
+              return null; 
+            }
+            break; 
+            case 'playscript': {
+              //vm.ytscriptdb.player.state='play'; 
+              vm.ytscriptdb.script_curr=d.s;
+              vm.ytscriptdb.pid=d.s.pid; 
+              vm.ytplayercb({'act':'playerctrl','ctrl':'play','start':d.s.start,'end':d.s.end});
+            }
+            break; 
+            case 'pausescript': {
+              //vm.ytscriptdb.player.state='pause'; 
+              vm.ytscriptdb.script_curr=d.s;
+              vm.ytscriptdb.pid=d.s.pid; 
+              vm.ytplayercb({'act':'playerctrl','ctrl':'pause','start':d.s.start,'end':d.s.end});
+            }
+            break; 
+            case 'getclass': {
+              if(d.target=='playbtn'){
+                return 'btn btn-default'; 
+              }
+              if(d.target=='pausebtn'){
+                return 'btn btn-info'; 
+              }
+              if(d.target=='repeatbtn'){
+                return 'btn btn-default'; 
+              }
+            }
+            break; 
+          }
+        }
+        this.ytlistcb=function(d){
+          //console.log(d);
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              vm.ytlistdb={
+                list:[],
+                listready:0,
+                style1:{
+                  id:'',
+                }
+              }; 
+            }
+            break; 
+            case 'loadlist': {
+              vm.ytlistdb.list=[]; 
+              ytf_loadVideoList(function(data){
+                $scope.$apply(function(){
+                  vm.ytlistdb.list=[]; 
+                  vm.rootdb.vid=data.data[0][0]; 
+                  vm.ytplayerdb.player.vid=vm.rootdb.vid; 
+                  vm.ytscriptdb.vid=vm.rootdb.vid;
+                  vm.ytlearnscriptdb.vid=vm.rootdb.vid;
+                  for(var i=0; i<data.data.length; i++){
+                    vm.ytlistdb.list.push({
+                      'label':data.data[i][1],
+                      'vid':data.data[i][0],
+                    });
+                  }
+                  vm.ytlistdb.listready=1; 
+                });
+              });
+            }
+            break; 
+            case 'createid':{
+      	      var text = "";
+              var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+              for( var i=0; i < 5; i++ )
+                text+=possible.charAt(Math.floor(Math.random()*possible.length));
+              return text;
+            }
+            break; 
+            case 'vidsel':{
+              vm.rootcb({'act':'change','target':'vid','vid':d.vid});
+            }
+            break; 
+          }
+        }
+        this.ytsearchcb=function(d){
+          //console.log(d);
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              vm.ytsearchdb={
+                list:{},
+                listready:0,
+                style1:{
+                  id:'',
+                }
+              }; 
+            }
+            break; 
+            case 'loadlist': {
+              vm.ytsearchdb.listready=0; 
+              ytf_searchVideoList(d.d,function(data){
+                console.log(data);
+                $scope.$apply(function(){
+                  var count=0; 
+                  vm.ytsearchdb.list=data; 
+                  vm.ytsearchdb.listready=1; 
+                });
+              });
+            }
+            break; 
+            case 'click': {
+              if(d.target=="listitemimg"){
+                this.rootcb({'act':'click','target':'listitemimg','vid':d.vid});
+                //console.log(d.vid);
+              }
+            }
+            break; 
+            case 'show': {
+              if(d.target=="searchmain"){
+                if(vm.ytsearchdb.listready==1){
+                  return true; 
+                }else{
+                  return false; 
+                }
+              }
+            }
+            break; 
+          }
+        }
+/////////////////////////////////////////////////////
+        this.ytlearnscriptcb=function(d){
+          //console.log(d);
+          var act=(d.act==undefined?'':d.act); 
+          switch(act){
+            case 'initdb': {
+              vm.ytlearnscriptdb={
+                pid:-1,
+                //vid:'jExYHd1yyWc',
+                vid:'',
+                scriptsready:0,
+                scripts:[],
+                player:vm.ytplayerdb.player,
+                ytlistdb:vm.ytlistdb,
+                ytlistcb:function(d){
+                  vm.ytlistcb(d);
+                },
+                rootdb:vm.rootdb,
+                ytplayerdb:vm.ytplayerdb,
+                ytplayercb:function(d){
+                  vm.ytplayercb(d);
+                },
+                rootcb:function(d){
+                  vm.rootcb(d);
+                },
+              }; 
+              //localStorage.removeItem("ytlearnscripts"); 
+              var ytlearnscriptsstorage=localStorage.getItem("ytlearnscripts");
+              if(ytlearnscriptsstorage==undefined){
+                localStorage.setItem("ytlearnscripts", JSON.stringify([
+                  {'pid':0,'start':1,'end':5.6,'text':'learn script1'},
+                  {'pid':1,'start':5.7,'end':8.3,'text':'learn script2'},
+                  {'pid':2,'start':8.3,'end':11.2,'text':'learn script3'},
+                  {'pid':3,'start':11.2,'end':19.4,'text':'learn script4: fhsbfsbhbfhsbhfbhsbfhbsbfhsbhfbhsbhfbhbhfsbhbfhsbhfbbshfbhbhfsbhfbshbdbffbfhbhdfbfbhsbhfbshbfhbshbfhbshbfbshfbhsbhh'},
+                  {'pid':4,'start':19.4,'end':23.3,'text':'learn script5'},
+                ]));
+              }
+            }
+            break; 
+            case 'load': {
+              if(d.target=='learnscript'){
+                ytf_loadLearningScript(vm.ytlearnscriptdb.vid,function(data){
+                  if(data.err==0){
+                    if(data.data!==undefined){
+                      $scope.$apply(function(){
+                        var items=data.data; 
+                        console.log(items);
+                        vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]=[]; 
+                        for(i=0; i<items.length; i++){
+                          vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].push({
+                            pid:i,
+                            start:parseFloat(items[i][0]),
+                            end:parseFloat(items[i][1]),
+                            text:items[i][2]
+                          });
+                        }
+                      });
+                    }
+                  }
+                });
+              }
+            }
+            break; 
+            case 'create': {
+              if(d.target=='id'){
+                var text = "";
+                var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+                for( var i=0; i < 5; i++ )
+                  text+=possible.charAt(Math.floor(Math.random()*possible.length));
+                return text;
+              }
+            }
+            break; 
+            case 'add': {
+              if(d.target=='script'){
+                if(vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]==undefined){
+                  vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]=[]; 
+                }
+                vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].push({
+                  'pid':vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].length,
+                  'start':parseFloat(d.start),
+                  'end':parseFloat(d.end),
+                  'text':d.text
+                });
+                vm.ytlearnscriptdb.scriptsready=0; 
+                ytf_addLearningScript(vm.ytlearnscriptdb.vid, [parseFloat(d.start), parseFloat(d.end), d.text], function(){
+                  vm.ytlearnscriptdb.scriptsready=1; 
+                  $scope.$apply();
+                });
+              }
+            }
+            break; 
+            case 'set': {
+              if(d.target=='script'){
+                if(vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]==undefined){
+                  vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]=[]; 
+                }
+                vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid][d.pid]={
+                  'pid':d.pid,
+                  'start':parseFloat(d.start),
+                  'end':parseFloat(d.end),
+                  'text':d.text
+                };
+                vm.ytlearnscriptdb.scriptsready=0; 
+                ytf_setLearningScript(vm.ytlearnscriptdb.vid, d.pid+1, [parseFloat(d.start), parseFloat(d.end), d.text], function(){
+                  vm.ytlearnscriptdb.scriptsready=1; 
+                  $scope.$apply();
+                });
+              }
+            }
+            break; 
+            case 'del': {
+              if(d.target=='script'){
+                vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].splice(d.pid, 1);
+                for(var i=0; i<vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].length; i++){
+                  vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid][i].pid=i; 
+                }
+                vm.ytlearnscriptdb.scriptsready=0; 
+                ytf_delLearningScript(vm.ytlearnscriptdb.vid, d.pid+1, function(){
+                  vm.ytlearnscriptdb.scriptsready=1; 
+                  $scope.$apply();
+                });
+              }
+            }
+            break; 
+            case 'change': {
+              if(d.target=='vid'){
+                console.log(d.vid);
+                //vm.ytlearnscriptcb({'act':'save','target':'learnscript'});
+              }
+            }
+            break; 
+            case 'set': {
+              if(d.target=='pid'){
+                console.log(d.pid);
+                vm.ytlearnscriptdb.pid=d.pid;
+              }
+            }
+            break; 
+            case 'save': {
+              if(d.target=='learnscript'){
+                var data={}; 
+                console.log(vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]);
+                localStorage.setItem("ytlearnscripts", JSON.stringify(vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid]));
+                data.vid=vm.ytlearnscriptdb.vid; 
+                data.items=[]; 
+                for(var i=0; i<vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid].length; i++){
+                  var script=vm.ytlearnscriptdb.scripts[vm.ytlearnscriptdb.vid][i]; 
+                  data.items.push({
+                    start:script.start,
+                    end:script.end,
+                    text:script.text
+                  });
+                }
+                data.items=JSON.stringify(data.items);
+                console.log(data);
+                vm.ytlearnscriptdb.scriptsready=0; 
+                ytf_saveSheetDataByKey('learningscript', 'vid', vm.ytlearnscriptdb.vid, JSON.stringify(data), function(data){
+                  vm.ytlearnscriptdb.scriptsready=1; 
+                  $scope.$apply();
+                });
+                return; 
+                var rowdata={}; 
+                for(var vid in vm.ytlearnscriptdb.scripts){
+                  var rowno=vm.ytlearnscriptdb.scripts[vid].rowno; 
+                  console.log(vid);
+                  rowdata[rowno]={'vid':vid}; 
+                  rowdata[rowno].items=[];
+                  console.log(vm.ytlearnscriptdb.scripts[vid]);
+                  for(var i=vm.ytlearnscriptdb.scripts[vid].length; i>0; i--){
+                    var s=vm.ytlearnscriptdb.scripts[vid][i-1]; 
+                    rowdata[rowno].items.push({'start':s.start,'end':s.end,'text':s.text});
+                  }
+                  //rowdata[rowno].items=escape(JSON.stringify(rowdata[1].items));
+                  rowdata[rowno].items=JSON.stringify(rowdata[rowno].items);
+                }
+                console.log(rowdata);
+                vm.ytlearnscriptdb.scriptsready=0; 
+                ytf_saveSheetData('learningscript', JSON.stringify(rowdata), function(data){
+                  vm.ytlearnscriptdb.scriptsready=1; 
+                  $scope.$apply();
+                });
+              }
+            }
+            break; 
+            case 'playscript': {
+              vm.ytplayercb({'act':'playerctrl','ctrl':'play','start':d.s.start,'end':d.s.end});
+            }
+            break; 
+            case 'pausescript': {
+              vm.ytplayercb({'act':'playerctrl','ctrl':'pause','start':d.s.start,'end':d.s.end});
+            }
+            break; 
+          }
+        }
+/////////////////////////////////////////////////////
+      }
+      this.$doCheck=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytplayerroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    template:
+    //'<div onMouseDown="this.style.opacity=\'0.7\'; this.style.filter=\'Alpha(Opacity=70)\';" onMouseUp="this.style.opacity=\'1.0\'; this.style.filter=\'Alpha(Opacity=100)\';" class=\'test\'><br>'+
+    //'<embed something here>'+
+    '<div id="{{vm.db.player.ytid}}"></div>'+
+    //'</embed>'+
+	//'</div>'+
+    ''+
+    '',
+    controller:function($scope, $element){
+      var vm=this; 
+      this.$onInit=function(){
+        this.cb({d:{'act':'initdb'}});
+        this.cb({d:{'act':'loadytiframe'}});
+        this.cb({d:{'act':'loadytid'}});
+        this.width=$($element).width();
+        //$(".drag").draggable();
+      }
+      this.$doCheck=function(){
+        if($($element).width()!==this.width){ 
+          this.width=$($element).width(); 
+	      var h=Math.round(this.width*9/16*1);
+           if($($element).find('iframe')!==undefined){
+             $($element).find('iframe').width(this.width); 
+             $($element).find('iframe').height(h); 
+           }
+        }
+        if(this.db==undefined) return; 
+        if(this.db.iframeready==1){
+          if($("#"+vm.db.player.ytid).attr("id")!==undefined){
+            if(this.db.player.ytid_pre!==this.db.player.ytid){
+              var ytid=this.db.player.ytid; 
+              this.db.player.ytid_pre=this.db.player.ytid; 
+              //this.cb({d:{'act':'loadytplayer','ytid':ytid,'h':h,'w':w}});
+              this.cb({d:{'act':'loadytplayer','ytid':this.db.player.ytid}});
+            }
+          }
+          if(this.db.player.ready==1){
+            if(this.db.player.vid_pre!==this.db.player.vid){
+              this.cb({d:{'act':'loadytplayer','ytid':this.db.player.ytid}});
+              //this.cb({d:{'act':'cuevid','vid':this.db.player.vid}});
+              this.db.player.vid_pre=this.db.player.vid; 
+            }
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytscriptroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    template:
+    //'VID: {{vm.db.vid}}<br>'+
+    '<ytscriptmain db="vm.db" cb="vm.cb({\'d\':d})" class="col-xs-12" style="height:300px;overflow-y:scroll;"></ytscriptmain>'+
+    //'<ytscriptmain db="vm.db" cb="vm.cb({\'d\':d})"></ytscriptmain>'+
+    ''+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+        this.cb({d:{'act':'initdb'}});
+        this.loadscript=function(){
+          this.cb({d:{'act':'loadscript'}});
+        }
+      }
+      this.$doCheck=function(){
+        if(this.db!==undefined){
+          if(this.db.vid!==this.db.vid_pre){
+            console.log("ytscript vid change!!");
+            this.db.vid_pre=this.db.vid; 
+            this.loadscript(); 
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytscriptmain',{
+    bindings:{'db':'<','cb':'&'},
+    template:
+    '<ytscriptitem db="vm.db" cb="vm.cb({\'d\':d})" s="s" ng-repeat="s in vm.db.scripts"></ytscriptitem>'+
+    '',
+    controller:function($scope){
+    },
+    controllerAs:'vm'
+  })
+  .component('ytscriptitem', {
+    bindings:{'db':'<','cb':'&','s':'<'},
+    template:
+    ''+
+    '<button ng-class="vm.pauseclass()" ng-show="vm.showpause()" ng-click="vm.pause()">'+
+    '  <i class="glyphicon glyphicon-pause"></i>'+
+    '</button>'+
+    '<button ng-class="vm.playclass()" ng-show="vm.showplay(0)" ng-click="vm.play(0)">'+
+    '  <i class="glyphicon glyphicon-play"></i>'+
+    '</button>'+
+    '<button ng-class="vm.repeatclass()" ng-show="vm.showplay(1)" ng-click="vm.play(1)">'+
+    '  <i class="glyphicon glyphicon-repeat"></i>'+
+    '</button>'+
+    '&nbsp;'+
+    '<span id="transcripttext{{vm.s.pid}}" ng-class="vm.showtext()">{{vm.s.text}}</span>'+
+    '<div ng-show="vm.s.translate == \'\' ? false:true ">'+
+    '  <span id="transcripttexttranslate{{vm.s.pid}}" ng-class="vm.showtext()">{{vm.s.translate}}</span>'+
+    '</div>'+
+    '<br>'+
+    ''+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.showpause=function(){
+        if(this.db==undefined) return; 
+        if((this.db.pid==this.s.pid)){
+          if(this.db.player.state=='play'||this.db.player.state=='buffer'){
+            return true; 
+          }else{
+            return false; 
+          }
+        }else{
+          return false; 
+        }
+      }
+      this.playclass=function(){
+        return this.cb({'d':{'act':'getclass','target':'playbtn'}}); 
+      }
+      this.pauseclass=function(){
+        return this.cb({'d':{'act':'getclass','target':'pausebtn'}}); 
+      }
+      this.repeatclass=function(){
+        return this.cb({'d':{'act':'getclass','target':'repeatbtn'}}); 
+      }
+      this.showplay=function(loop){
+        if(this.db==undefined) return; 
+        //console.log(this.db.script_curr);
+        //console.log(this.s);
+        if(this.db.player.loop==loop){
+          if((this.db.player.state=='play'||this.db.player.state=='buffer')){
+            if(this.db.pid!=this.s.pid){
+              return true; 
+            }else{
+              return false; 
+            }
+          }else{
+            return true; 
+          }
+        }else{
+          return false; 
+        }
+        if(((this.db.pid!=this.s.pid)||(this.db.player.state!=='play'&&this.db.player.state!=='buffer'))&&(this.db.player.loop==loop)){
+          return true; 
+        }else{
+          return false; 
+        }
+      }
+      this.showtext=function(){
+        if(this.db==undefined) return; 
+        if(this.db.pid==this.s.pid){
+          if(vm.textclass!='scriptfontsel'){
+		    var scrollTopVal=$("#transcripttext"+vm.db.pid).offset().top-$("ytscriptmain").offset().top+$("ytscriptmain").scrollTop()-15; 
+		    $("ytscriptmain").scrollTop(scrollTopVal);
+            vm.textclass='scriptfontsel'; 
+          }
+          return 'scriptfontsel'; 
+        }else{
+          vm.textclass='scriptfont'; 
+          return 'scriptfont'; 
+        }
+      }
+      this.play=function(loop){
+        this.cb({'d':{'act':'playscript','s':this.s}})
+      }
+      this.pause=function(){
+        this.cb({'d':{'act':'pausescript','s':this.s}})
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytlistroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    template:
+    '<ytlistmain1 db="vm.db" cb="vm.cb({\'d\':d})"></ytlistmain1>'+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+        this.cb({d:{'act':'initdb'}});
+        this.cb({d:{'act':'loadlist'}});
+      }
+      this.$doCheck=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytlistmain1',{
+    bindings:{'db':'<','cb':'&'},
+    template:
+    '<div class="dropdown">'+
+    '  <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" id="{{vm.db.style1.id}}">'+
+    '    Video List'+
+    '    <span class="caret"></span>'+
+    '  </button>'+
+    '  <ul class="dropdown-menu" aria-labelledby="{{vm.db.style1.id}}">'+
+    '    <li><a href="javascript:void(0)" ng-click="vm.vidsel(l)" ng-repeat="l in vm.db.list">{{l.label}}</a></li>'+
+    '  </ul>'+
+    '</div>'+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+      }
+      this.$doCheck=function(){
+        if(this.db==undefined) return; 
+        if(this.db.listready==1){
+          if(this.db.style1.id=='')
+            this.db.style1.id=this.cb({d:{'act':'createid'}});
+        }
+      }
+      this.vidsel=function(l){
+        this.cb({d:{'act':'vidsel','vid':l.vid}});
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytsearchroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    template:
+    '<ytsearchmain1 ng-show="vm.cb({\'d\':{\'act\':\'show\',\'target\':\'searchmain\'}})" db="vm.db" cb="vm.cb({\'d\':d})"></ytsearchmain1>'+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+        this.cb({d:{'act':'initdb'}});
+      }
+      this.$doCheck=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytsearchmain1',{
+    bindings:{'db':'<','cb':'&'},
+    template:
+    '<ytsearchitems1 db="vm.db" cb="vm.cb({\'d\':d})" l="l" ng-repeat="l in vm.db.list.data.items"></ytsearchitems1>'+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+      }
+      this.$doCheck=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  .component('ytsearchitems1',{
+    bindings:{'db':'<','cb':'&','l':'<'},
+    template:
+    '<hr size="20">'+
+    '<div ng-click="vm.localcb({\'act\':\'click\', \'target\':\'img\'})" style="cursor:pointer">'+
+    '<h4 class="text-info">{{vm.l.snippet.title}}</h4>'+
+    '<hr>'+
+    '<div class="row">'+
+    '<div class="col-sm-2 col-xs-4">'+
+    '<img src="{{vm.l.snippet.thumbnails.default.url}}" class="img-thumbnail"></img>'+
+    '</div>'+
+    '<div class="col-sm-10 col-xs-8">'+
+    //'Video ID: {{vm.l.id.videoId}}'+
+    '{{vm.l.snippet.description}}'+
+    '</div>'+
+    '</div>'+
+    '</div>'+
+    '<br>'+
+    ''+
+    '',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+      }
+      this.$doCheck=function(){
+      }
+      this.localcb=function(d){
+        //console.log(d);
+        var act=(d.act==undefined?'':d.act); 
+        switch(act){
+          case 'click': {
+            if(d.target=='img'){
+              this.cb({'d':{
+                'act':'click',
+                'target':'listitemimg',
+                'vid':vm.l.id.videoId
+              }});
+            }
+          }
+          break;
+        }
+      }
+    },
+    controllerAs:'vm'
+  })
+  ;
+  </script>
+  <script type='text/ng-template' id='ytlearnscriptroot.html'>
+<!--
+    VID: <input type="text" ng-model='vm.db.vid' ng-change='vm.cb({"d":{"act":"change","target":"vid"}})'></input><br>
+-->
+    <ytlearnscriptadditem1 db="vm.db" cb="vm.cb({'d':d})"></ytlearnscriptadditem1>
+    <h3>Learning Note:</h3>
+    <ytlearnscriptmain1 db="vm.db" cb="vm.cb({'d':d})"></ytlearnscriptmain1>
+  </script>
+  <script>
+  app.component('ytlearnscriptroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    templateUrl:'ytlearnscriptroot.html',
+    controller:function($scope){
+      var vm=this; 
+      this.$onInit=function(){
+        this.cb({d:{'act':'initdb'}});
+        this.vid=''; 
+      }
+      this.$doCheck=function(){
+        if(this.db!==undefined){
+          if(this.vid!==this.db.vid){
+            this.vid=this.db.vid; 
+            this.cb({d:{'act':'load','target':'learnscript'}});
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  })
+  ;
+  </script>
+  <style>
+  .learnscript {
+    height:300px;
+    overflow-y:scroll;
+    overflow-x:hidden;
+    max-width:100%;
+  }
+  </style>
+  <script type='text/ng-template' id='ytlearnscriptmain1.html'>
+    <div class="learnscript">
+<!--
+      <ytlearnscriptitem1 s="s" ng-repeat="s in vm.db.scripts[vm.db.vid].slice().reverse()" db="vm.db" cb="vm.cb({'d':d})"></ytlearnscriptitem1>
+      <ytlearnscriptitem1 s="s" ng-repeat="s in vm.db.scripts[vm.db.vid]" db="vm.db" cb="vm.cb({'d':d})"></ytlearnscriptitem1>
+-->
+      <ytlearnscriptitem2 s="s" ng-repeat="s in vm.db.scripts[vm.db.vid]" db="vm.db" cb="vm.cb({'d':d})"></ytlearnscriptitem2>
+    </div>
+  </script>
+  <script>
+  app.component('ytlearnscriptmain1',{
+    bindings:{'db':'<','cb':'&'},
+    templateUrl:'ytlearnscriptmain1.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  </script>
+  <style>
+  .learnscripttext {
+    padding:10px;
+    border-width:1px;
+    border-style:solid; 
+    border-color:#67b8f1; 
+    background:#67b8f1;
+    border-radius:4px;
+    word-break: break-all;
+  }
+  .learnscriptitemtitle {
+    background:#dbdbdb;
+    border-top-width:0px;
+    border-right-width:0px;
+    border-left-width:0px;
+    border-bottom-width:1px;
+    border-style:solid;
+    padding-left:10px;
+    padding-right:10px;
+  }
+  .learnscriptitemctrl {
+    padding-left:10px;
+    padding-right:10px;
+  }
+  </style>
+  <script type='text/ng-template' id='ytlearnscriptitem1.html'>
+    <div class="row learnscriptitemtitle">
+      <div class="col-xs-1"><label>No.</label></div>
+      <div class="col-xs-2">
+        <label for="start_{{ vm.id }}">Start<br>(s)</label>
+      </div>
+      <div class="col-xs-2">
+        <label for="end_{{ vm.id }}">End<br>(s)</label>
+      </div>
+      <div class="col-xs-7" style="text-align:right">
+        <button class="btn btn-sm btn-warning" ng-click='vm.cb({"d":{"act":"del","target":"script","pid":vm.s.pid}})'><i class="glyphicon glyphicon-remove"></i></button>
+      </div>
+    </div>
+    <div class="row learnscriptitemctrl">
+      <div class="col-xs-1">{{ vm.s.pid + 1 }}</div>
+      <div class="col-xs-2">
+        <div style="cursor:pointer">
+          <input learnscriptstartinput ng-model="vm.s.start" ng-show="vm.show({'t':'start','s':'input'})" ng-keypress="vm.keypress({'t':'start','s':'input'},$event)" ng-blur="vm.blur({'t':'start','s':'input'})" type="text" value="" class="form-control" id="start_{{ vm.id }}"></input>
+          <div ng-show="vm.show({'t':'start','s':'text'})" ng-click="vm.click({'t':'start','s':'text'})">{{vm.s.start}}</div>
+        </div>
+      </div>
+      <div class="col-xs-2">
+        <div style="cursor:pointer">
+          <input learnscriptendinput ng-model="vm.s.end" ng-show="vm.show({'t':'end','s':'input'})" ng-keypress="vm.keypress({'t':'end','s':'input'},$event)" ng-blur="vm.blur({'t':'end','s':'input'})" type="text" value="" class="form-control" id="start_{{ vm.id }}"></input>
+          <div ng-show="vm.show({'t':'end','s':'text'})" ng-click="vm.click({'t':'end','s':'text'})">{{vm.s.end}}</div>
+        </div>
+      </div>
+      <div class="col-xs-7" style="vertical-align:middle;height:100%">
+        <button class="btn btn-default"><i class="glyphicon glyphicon-play"></i></button>
+        <button class="btn btn-default"><i class="glyphicon glyphicon-repeat"></i></button>
+        <button class="btn btn-default"><i class="glyphicon glyphicon-step-backward"></i></button>
+        <button class="btn btn-danger"><i class="glyphicon glyphicon-pause"></i></button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div style="cursor:pointer">
+          <input learnscripttextinput ng-model="vm.s.text" ng-show="vm.show({'t':'text','s':'input'})" ng-keypress="vm.keypress({'t':'text','s':'input'},$event)" ng-blur="vm.blur({'t':'text','s':'input'})" type="text" value="" class="form-control" id="text_{{ vm.id }}"></input>
+          <div ng-show="vm.show({'t':'text','s':'text'})" ng-click="vm.click({'t':'text','s':'text'})" class="learnscripttext">{{vm.s.text}}</div>
+        </div>
+      </div>
+    </div>
+    <hr>
+  </script>
+  <script>
+  app.component('ytlearnscriptitem1',{
+    bindings:{'db':'<','cb':'&','s':'<'},
+    templateUrl:'ytlearnscriptitem1.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        this.show.target={}; 
+        this.show.target.text='text'; 
+        this.show.target.start='text'; 
+        this.show.target.end='text'; 
+        this.id=this.cb({'d':{'act':'create','target':'id'}});
+      }
+      this.show=function(t){
+        if(t.t!==undefined){
+          if(t.s==this.show.target[t.t]){
+            return true; 
+          }else{
+            return false; 
+          }
+        }
+      }
+      this.click=function(t){
+        this.cb({'d':{'act':'set','target':'pid','pid':vm.s.pid}});
+        if(t.t!==undefined){
+          vm.show.target[t.t]='input';
+          var el; 
+          $($element).find('input').each(function (i, e) {
+            if($(e).attr('learnscript'+t.t+'input')!==undefined){
+              console.log('learnscript'+t.t+'input');
+              el=e; 
+            }
+          });
+          if(el){
+            setTimeout(function(){
+              $(el).focus();
+            },10);
+          }
+        }
+      }
+      this.keypress=function(t,e){
+        this.cb({'d':{'act':'set','target':'pid','pid':vm.s.pid}});
+        if(t.t!==undefined){
+          if(e.which==13){
+            vm.show.target[t.t]='text'; 
+            vm.cb({'d':{'act':'save','target':'learnscript'}});
+          }
+        }
+      }
+      this.blur=function(t){
+        this.cb({'d':{'act':'set','target':'pid','pid':vm.s.pid}});
+        if(t.t!==undefined){
+          if(t.s=='input'){
+            vm.show.target[t.t]='text'; 
+            vm.cb({'d':{'act':'save','target':'learnscript'}});
+          }
+        }
+      }
+      this.$doCheck=function(){
+        if(this.db.pid!==this.s.pid){
+          vm.show.target.start='text'; 
+          vm.show.target.end='text'; 
+          vm.show.target.text='text'; 
+        }
+      }
+    },
+    controllerAs:'vm'
+  })
+  ;
+  </script>
+  <script>
+  app.component('ytlearnscriptitem2', {
+    bindings:{'db':'<','cb':'&','s':'<'},
+    template:
+    ''+
+    ''+
+    '<div ng-show="vm.edit == 1 ? false:true">'+
+    '<button ng-class="vm.pauseclass()" ng-show="vm.showpause()" ng-click="vm.pause()">'+
+    '  <i class="glyphicon glyphicon-pause"></i>'+
+    '</button>'+
+    '<button ng-class="vm.playclass()" ng-show="vm.showplay(0)" ng-click="vm.play(0)">'+
+    '  <i class="glyphicon glyphicon-play"></i>'+
+    '</button>'+
+    '<button ng-class="vm.repeatclass()" ng-show="vm.showplay(1)" ng-click="vm.play(1)">'+
+    '  <i class="glyphicon glyphicon-repeat"></i>'+
+    '</button>'+
+    '<button class="btn btn-warning" ng-click="vm.doEdit()">'+
+    '  <i class="glyphicon glyphicon-edit"></i>'+
+    '</button>'+
+    '<button class="btn btn-danger" ng-click="vm.remove()">'+
+    '  <i class="glyphicon glyphicon-remove"></i>'+
+    '</button>'+
+    '&nbsp;'+
+    '<span id="learnscripttext{{vm.s.pid}}" ng-class="vm.showtext()">{{vm.s.text}}</span>'+
+    '<div ng-show="vm.s.translate == \'\' ? false:true ">'+
+    '  <span id="learnscripttexttranslate{{vm.s.pid}}" ng-class="vm.showtext()">{{vm.s.translate}}</span>'+
+    '</div>'+
+    '</div>'+
+    '<div ng-show="vm.edit == 1 ? true:false">'+
+    //'Edit Mode!!'+
+    'Start <input ng-model="vm.s.start" size="3" type="text" ng-keypress="vm.keypress($event)"></input>(s) ~ '+
+    'End <input ng-model="vm.s.end" size="3" type="text" ng-keypress="vm.keypress($event)"></input>(s)'+
+    '<input ng-model="vm.s.text" type="text" ng-keypress="vm.keypress($event)" learningscripttext></input>'+
+    '<button class="btn btn-sm btn-info" ng-click="vm.ok()">'+
+    '  <i class="glyphicon glyphicon-ok"></i>'+
+    '</button>'+
+    '<button class="btn btn-sm btn-danger" ng-click="vm.edit=0">'+
+    '  <i class="glyphicon glyphicon-remove-circle"></i>'+
+    '</button>'+
+    '</div>'+
+    '<br>'+
+    ''+
+    ''+
+    '',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        this.edit=0; 
+      }
+      this.doEdit=function(){
+        console.log($($element).find('[learningscripttext]').val());
+        setTimeout(function(){
+          $($element).find('[learningscripttext]').focus();
+        }, 10);
+        this.edit=1; 
+      }
+      this.ok=function(){
+        vm.cb({
+          "d":{
+            "act":"set",
+            "target":"script",
+            "pid":vm.s.pid,
+            "start":vm.s.start,
+            "end":vm.s.end,
+            "text":vm.s.text,
+          }
+        });
+        this.edit=0; 
+      }
+      this.remove=function(){
+        vm.cb({"d":{"act":"del","target":"script","pid":vm.s.pid}}); 
+      }
+      this.keypress=function(e){
+        this.cb({'d':{'act':'set','target':'pid','pid':vm.s.pid}});
+        if(e.which==13){
+          this.ok();
+          this.edit=0; 
+        }
+      }
+      this.blur=function(){
+        this.cb({'d':{'act':'set','target':'pid','pid':vm.s.pid}});
+		this.ok();
+		this.edit=0; 
+      }
+      this.showpause=function(){
+        if(this.db==undefined) return; 
+        var currTime=parseFloat(this.db.player.currTime);
+        var startTime=parseFloat(this.s.start);
+        var endTime=parseFloat(this.s.end);
+        if((currTime>=startTime)&&(currTime<=endTime)){
+          //console.log(this.cb({'d':{'act':'playerstate'}}));
+          if(this.db.player.state=='play'||this.db.player.state=='buffer'){
+            return true; 
+          }else{
+            return false; 
+          }
+        }else{
+          return false; 
+        }
+      }
+      this.playclass=function(){
+        return 'btn btn-default'; 
+      }
+      this.pauseclass=function(){
+        return 'btn btn-info'; 
+      }
+      this.repeatclass=function(){
+        return 'btn btn-default'; 
+      }
+      this.showplay=function(loop){
+        if(this.db==undefined) return; 
+        //console.log(this.db.script_curr);
+        //console.log(this.s);
+        if(this.db.player.loop==loop){
+          if((this.db.player.state=='play'||this.db.player.state=='buffer')){
+            var currTime=parseFloat(this.db.player.currTime);
+            var startTime=parseFloat(this.s.start);
+            var endTime=parseFloat(this.s.end);
+            if((currTime>=startTime)&&(currTime<=endTime)){
+              return false; 
+            }else{
+              return true; 
+            }
+          }
+          if((this.db.player.state=='unstarted'||this.db.player.state=='cue'||this.db.player.state=='pause')){
+            return true; 
+          }
+        }else{
+          return false; 
+        }
+      }
+      this.showtext=function(){
+        if(this.db==undefined) return; 
+        var currTime=parseFloat(this.db.player.currTime);
+        var startTime=parseFloat(this.s.start);
+		var endTime=parseFloat(this.s.end);
+		if((currTime>=startTime)&&(currTime<=endTime)){
+          if(vm.textclass!='scriptfontsel'){
+		    var scrollTopVal=$("#learnscripttext"+vm.s.pid).offset().top-$("ytlearnscriptmain1").offset().top+$("ytlearnscriptmain1").scrollTop()-15; 
+		    $("ytlearnscriptmain1").scrollTop(scrollTopVal);
+            vm.textclass='scriptfontsel'; 
+          }
+          return 'scriptfontsel'; 
+        }else{
+          vm.textclass='scriptfont'; 
+          return 'scriptfont'; 
+        }
+      }
+      this.play=function(loop){
+        this.cb({'d':{'act':'playscript','s':this.s}})
+      }
+      this.pause=function(){
+        this.cb({'d':{'act':'pausescript','s':this.s}})
+      }
+    },
+    controllerAs:'vm'
+  });
+  </script>
+  <script type='text/ng-template' id='ytlearnscriptadditem1.html'>
+    <ytplayerctrl rootdb="vm.db.rootdb" rootcb="vm.db.rootcb(d)" ytlistdb="vm.db.ytlistdb" ytlistcb="vm.db.ytlistcb(d)" ytplayerdb="vm.db.ytplayerdb" ytplayercb="vm.db.ytplayercb(d)"></ytplayerctrl>
+    <label>Add Notes: </label><br>
+    Start: <input type="text" ng-model="vm.db.player.startTime" size="3" addlearningscriptstart></input>
+    End :<input type="text" ng-model="vm.db.player.endTime" size="3" addlearningscriptend></input>
+    Text :<input type="text" ng-model="vm.text" addlearningscripttext></input>
+    <button class="btn btn-info" ng-click='vm.addscript()'><i class="glyphicon glyphicon-plus"></i></button>
+  </script>
+  <script>
+  app.component('ytlearnscriptadditem1',{
+    bindings:{'db':'<','cb':'&'},
+    templateUrl:'ytlearnscriptadditem1.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+      }
+      this.$doCheck=function(){
+      }
+      this.addscript=function(){
+        //console.log($($element).find('[addlearningscriptend]').val());
+        $($element).find('input').val('');
+        vm.cb({
+          "d":{
+            "act":"add",
+            "target":"script",
+            "start":vm.db.player.startTime,
+            "end":vm.db.player.endTime,
+            "text":vm.text,
+          }
+        });
+      }
+    },
+    controllerAs:'vm'
+  })
+  ;
+  </script>
+  <script type='text/ng-template' id='ytplayerctrl.html'>
+<!--   ///////////     Play Controller   /////////   -->
+  <div class="col-xs-12">
+    <br>
+	<button data-toggle="collapse" data-target="#{{vm.collapseid}}" class="btn btn-warning">Player Controller</button>
+  </div>
+  <div id="{{vm.collapseid}}" class="col-xs-12 collapse">
+    <ytlistroot db="vm.ytlistdb" cb="vm.ytlistcb({'d':d})"></ytlistroot>
+	Youtube URL or VID: <input ng-model="vm.rootdb.vid" type="text" ng-change="vm.rootcb({'d':{'act':'change','target':'vid','tab':vm.rootdb.vid}})"></input>
+	<br>
+	<button ng-show="vm.ytplayerdb.player.state=='buffer' || vm.ytplayerdb.player.state=='play' ? false : true" class="btn btn-default" ng-click="vm.ytplayercb({d:{'act':'playerctrl','ctrl':'play'}})">
+	<i class="glyphicon glyphicon-play"></i>
+	</button>
+	<button ng-show="vm.ytplayerdb.player.state!=='buffer' && vm.ytplayerdb.player.state!=='play' ? false : true" class="btn btn-default" ng-click="vm.ytplayercb({d:{'act':'playerctrl','ctrl':'pause'}})">
+	<i class="glyphicon glyphicon-pause"></i>
+	</button>
+	<button class="btn btn-default" ng-click="vm.ytplayercb({d:{'act':'playerctrl','ctrl':'back5s'}})">
+	-5
+	</button>
+	Repeat: <input ng-model="vm.rootdb.loop" ng-change="vm.rootcb({d:{'act':'change','target':'loop'}})" type="checkbox" ng-true-value="1" ng-false-value="0"></input>
+	&nbsp;
+    <br>
+	<button class="btn btn-primary" ng-show="vm.show('A')" ng-click="vm.rootcb({d:{'act':'click','target':'repeater','ctrl':'A'}})">
+	A<br><div style="font-size:8px"><i class="glyphicon glyphicon-play"></i> + Set start time</div>
+	</button>
+	<button class="btn btn-success" ng-show="vm.show('B')" ng-click="vm.rootcb({d:{'act':'click','target':'repeater','ctrl':'B'}})">
+	B<br><div style="font-size:8px">Set end time + <i class="glyphicon glyphicon-repeat"></i></div>
+	</button>
+	<button class="btn btn-warning" ng-show="vm.show('C')" ng-click="vm.rootcb({d:{'act':'click','target':'repeater','ctrl':'C'}})">
+	C<br><div style="font-size:8px">(Cancel loop)</div>
+	</button>
+  </div>
+  </script>
+  <script>
+  app.component('ytplayerctrl',{
+    bindings:{'ytlistdb':'<','ytlistcb':'&','rootdb':'<','rootcb':'&','ytplayerdb':'<','ytplayercb':'&',},
+    templateUrl:'ytplayerctrl.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+	    var text = "";
+	    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+	    for( var i=0; i < 5; i++ )
+	      text+=possible.charAt(Math.floor(Math.random()*possible.length));
+        vm.collapseid="playcontroller"+text; 
+        this.show=function(ctrl){
+          if(vm.rootdb.repeater.ctrl=='C'){
+            if(ctrl=='A'){
+              return true; 
+            }else{
+              return false; 
+            }
+          }
+          if(vm.rootdb.repeater.ctrl=='A'){
+            if(ctrl=='B'){
+              return true; 
+            }else{
+              return false; 
+            }
+          }
+          if(vm.rootdb.repeater.ctrl=='B'){
+            if(ctrl=='C'){
+              return true; 
+            }else{
+              return false; 
+            }
+          }
+        }
+      }
+      this.$doCheck=function(){
+      }
+    },
+    controllerAs:'vm'
+  })
+  ;
+  </script>
+  </body>
+</html>
+
+
+

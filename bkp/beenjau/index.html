@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+	<meta name="description" content="本公司創立於西元1978年，專業生產各型鍋爐，包括：貫流式蒸氣鍋爐、熱媒加熱爐、臥型煙管式蒸氣鍋爐、熱水鍋爐等；及全自動溫控炒爐，熱交換器，各種油槽、桶槽，配管工程">
+	<title>本昭興業股份有限公司</title>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js'></script>
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css'>
+	<link rel='stylesheet' href='http://enhanceralph.github.io/tubetag/css/testfont.css'>
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="icon" href="img/favicon.png">
+	<script type="text/javascript" src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.24.5/react-bootstrap.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js'></script>
+	<script language='javascript' type="text/javascript">
+	<!-- hide
+	var lang;
+	$(document).ready(function(){
+/*
+		$(".navbar-nav li a").click(function(event) {
+			$(".navbar-collapse").collapse('hide');
+		});
+*/
+		$.getScript("js/coreFunc.js", function(data, textStatus){
+			lang=getCookie("beenjaulang"); 
+			if(!lang){
+				lang="tw"; 
+				setCookie("beenjaulang", lang);
+			}else{
+				$("#langSel").val(lang);
+			}
+			$.getScript("js/language/"+lang+"/index.js", function(data, textStatus){
+				loadTidTabByHtml(index);
+				$("#all").show();
+			});
+		});
+	});
+	// done hiding -->
+	</script>
+
+  </head>
+  <body role="document" id="all" style="display:none">
+	<nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#" tid="indext001"></a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav navbar-right">
+					<li><a href="#about" tid="indext002"></a></li>
+					<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false"><span tid="indext003"></span><span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#boiler1"><span tid="indext004"></span></a></li>
+							<li><a href="#boiler2"><span tid="indext005"></span></a></li>
+							<li><a href="#boiler3"><span tid="indext006"></span></a></li>
+							<li><a href="#boiler4"><span tid="indext007"></span></a></li>
+							<li><a href="#boiler5"><span tid="indext008"></span></a></li>
+						</ul>
+					</li>
+					<li><a href="#contact" tid="indext009"></a></li>
+					<li><a href="#inquiry"><span tid="indext011"></span></a></li>
+					<li><a href="#dealer"><span tid="indext012"></span></a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div style="height:60px"></div>
+	<div class="container theme-showcase">
+		<div class="row">
+			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-1"></div>
+			<div class="col-lg-8 col-md-8 col-sm-8 col-xs-10">
+				<div class="row">
+					<form role="form" class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
+						<div class="form-group">
+							<label for="langSel" tid="indext013"></label>
+							<select class="form-control" id="langSel">
+								<option id="tw" tid="indext021" value="tw"></option>
+								<option id="en" tid="indext022" value="en"></option>
+								<option id="sp" tid="indext023" value="sp"></option>
+							</select>
+							<script>
+							$("#langSel").change(function(){
+								var langid=$(this).find(":selected").attr("id");
+								lang=langid
+								console.log(langid);
+								setCookie("beenjaulang", langid);
+								delete index; 
+								$("#all").hide(0);
+								$.getScript("js/language/"+lang+"/index.js", function(data, textStatus){
+									loadTidTabByHtml(index);
+									$("#all").show();
+								});
+							}); 
+							</script>
+						</div>
+					</form>
+				</div>
+				<div class="page-header">
+					<h1 id="about" tid="indext002"></h1>
+				</div>
+				<div class="row">
+					<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
+						<img data-src="js/holder.js/200x200" class="img-thumbnail" alt="200x200" src="img/boiler001.jpg" data-holder-rendered="true" style="">
+					</div>
+					<div><p tid="indext040" style="text-justify:inter-ideograph;text-align: justify"></p></div>
+					<div><p tid="indext041" style="text-justify:inter-ideograph;text-align: justify"></p></div>
+					<div><p tid="indext042" style="text-justify:inter-ideograph;text-align: justify"></p></div>
+				</div>
+				<div class="page-header">
+					<h1 id="boilers"><span tid="indext003"></span></h1>
+				</div>
+				<div class="page-header">
+					<h2 id="boiler1"><span tid="indext004"></span></h2>
+				</div>
+				<div class="page-header">
+					<h2 id="boiler2" tid="indext005"></h2>
+				</div>
+				<div class="page-header">
+					<h2 id="boiler3" tid="indext006"></h2>
+				</div>
+				<div class="page-header">
+					<h2 id="boiler4" tid="indext007"></h2>
+				</div>
+				<div class="page-header">
+					<h2 id="boiler5" tid="indext008"></h2>
+				</div>
+				<div class="page-header">
+					<h1 id="contact" tid="indext009"></h1>
+				</div>
+				<table class="table">
+					<thead>
+						<tr>
+							<th><span class="glyphicon glyphicon-info-sign"></span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><span class="glyphicon glyphicon-home"></span></td>
+							<td><span tid="indext010"></span></td>
+						</tr>
+						<tr>
+							<td><span class="glyphicon glyphicon-phone"></span></td>
+							<td><span tid="indext031"></span></td>
+						</tr>
+						<tr>
+							<td><span class="glyphicon glyphicon-print"></span></td>
+							<td><span tid="indext032"></span></td>
+						</tr>
+						<tr>
+							<td><span class="glyphicon glyphicon-envelope"></span></td>
+							<td>beenjau@beenjau.com.tw</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-lg-2 col-md-2 col-sm-2 col-xs-1"></div>
+		</div>
+	</div>
+  </body>
+</html>
+

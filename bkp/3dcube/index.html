@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/carousel.css" rel="stylesheet">
+<script src="js/react-with-addons.js"></script>
+<script src="js/browser.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="js/bootstrap.js"></script>
+<link rel="stylesheet" href="styles/3d-panorama-static.css" type="text/css"/>
+<script>
+	function getScrollOffsets(w) {
+		w = w || window;
+		if (w.pageXOffset != null) return { x: w.pageXOffset, y: w.pageYOffset };
+		var d = w.document;
+		if (document.compatMode == "CSS1Compat") return { x: d.documentElement.scrollLeft, y: d.documentElement.scrollTop };
+		return { x: d.body.scrollLeft, y: d.body.scrollTop };
+	}
+	var rotateY=0, nowRotateY=0; 
+	$(document).ready(function(){
+		$('#cube > img').on('dragstart', function(event) { event.preventDefault(); });
+		$("#cube").click(function(){
+			console.log("click!!");
+		}); 
+
+		// revert the touch event to mousedown event for mobile
+		var mouseEventTypes = {
+			touchstart: "mousedown",
+			touchmove: "mousemove",
+			touchend: "mouseup"
+		};
+
+		for (var originalType in mouseEventTypes) {
+			document.addEventListener(originalType, function (originalEvent) {
+				event = document.createEvent("MouseEvents");
+				touch = originalEvent.changedTouches[0];
+				event.initMouseEvent(mouseEventTypes[originalEvent.type], true, true, window, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, touch.ctrlKey, touch.altKey, touch.shiftKey, touch.metaKey, 0, null);
+				originalEvent.target.dispatchEvent(event);
+			});
+		}
+
+		$("#cube").mouseup(function(e){
+			console.log("mouse up!!");
+			document.ontouchmove = function (e) {
+				return true;
+			};
+		});
+		$("#cube").mousedown(function(e){
+			if (!e) e = window.event;
+			console.log("mouse down!!");
+			document.ontouchmove = function (e) {
+				e.preventDefault();
+			};
+			//$("#cube > img").css("pointer-events", "none");
+			var scroll = getScrollOffsets();
+			var startX = e.clientX + scroll.x;
+			var startY = e.clientY + scroll.y;
+			//console.log(startX+","+startY);
+			if (document.addEventListener) {
+				document.addEventListener("mousemove", moveHandler, true);
+				document.addEventListener("mouseup", upHandler, true);
+			}else if (document.attachEvent) {
+				$("#cube").setCapture();
+				$("#cube").attachEvent("onmousemove", moveHandler);
+				$("#cube").attachEvent("onmouseup", upHandler);
+				$("#cube").attachEvent("onlosecapture", upHandler);
+			}
+			function moveHandler(e) {
+				if (!e) e = window.event;
+				var nowScroll = getScrollOffsets();
+                var nowStartX = e.clientX + nowScroll.x;
+                var nowStartY = e.clientY + nowScroll.y;
+				console.log(nowStartX-startX);
+				nowRotateY=(rotateY+((nowStartX-startX)/6))%360; 
+				$("#cube").css("-webkit-transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+				$("#cube").css("-moz-transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+				$("#cube").css("transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+			}
+			function upHandler(e){
+				console.log("upHandler!!");
+				rotateY=nowRotateY; 
+				if (!e) e = window.event;
+				//$("#cube > img").css("pointer-events", "auto");
+				if (document.removeEventListener) {
+					document.removeEventListener("mouseup", upHandler, true);
+					document.removeEventListener("mousemove", moveHandler, true);
+				} else if (document.detachEvnet) {
+					$("#cube").detachEvent("onlosecapture", upHandler);
+					$("#cube").detachEvent("onmouseup", upHandler);
+					$("#cube").detachEvent("onmousemove", moveHandler);
+				}
+			}
+		});
+	}); 
+</script>
+</head>
+<body>
+
+<div style="text-align:center; position:fixed;  width:100%; height:1px; z-index:150 ">
+	<div id="debug" style="position:fixed; opacity:0.5;width:100%;margin-top:120px;color:#6595BE"></div>
+</div>
+
+<!-- Controls positioning on page and sets the perspective factor -->
+<div id="container-3d"> 
+	<!-- Positions the cube in space -->
+	<div id="position-3d">
+		<!-- Controls relative position of cube (centered around local origin) --> 
+		<div id="cube">
+			<!-- Each side of the cuve is rotated to face inwards. See stylesheet.  -->
+			<img src="images/UP.png" id="cube-top" class="face">
+			<img src="images/DOWN.png" id="cube-bottom" class="face">
+			<img src="images/LEFT.png" id="cube-left" class="face">
+			<img src="images/RIGHT.png" id="cube-right" class="face">
+			<img src="images/FRONT.png" id="cube-front" class="face">
+			<img src="images/BACK.png" id="cube-back" class="face">
+		</div>
+	</div>
+</div>
+
+</body>
+</html>

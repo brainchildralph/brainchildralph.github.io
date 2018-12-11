@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+	<meta name="Description" content="SNAP Test">
+    <title>SNAP Test</title>
+	<link rel="alternate" href="http://enhanceralph.github.io/tubetag/" hreflang="x-default" />
+	<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+	<script language="javascript" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/snap.svg/0.4.1/snap.svg-min.js"></script>
+	<script>
+	  $(document).ready(function(){
+/*
+        var path = document.querySelector('#wireR');
+        var length = path.getTotalLength();
+        // Clear any previous transition
+        path.style.transition = path.style.WebkitTransition =
+          'none';
+        // Set up the starting positions
+        path.style.strokeDasharray = length + ' ' + length;
+        path.style.strokeDashoffset = length;
+        // Trigger a layout so styles are calculated & the browser
+        // picks up the starting position before animating
+        path.getBoundingClientRect();
+        // Define our transition
+        path.style.transition = path.style.WebkitTransition =
+          'stroke-dashoffset 2s ease-in-out';
+        // Go!
+        path.style.strokeDashoffset = '0';
+*/
+		var snapC=Snap("#svgC"); 
+		var myPathC=snapC.path("M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5").attr({
+	  	  id: "squiggle",
+		  fill: "none",
+		  strokeWidth: "2",
+		  stroke: "#529fd9",
+		  strokeMiterLimit: "10",
+		  strokeDasharray: "12 6",
+		  strokeDashOffset: "180"
+	    });
+		var lenC = myPathC.getTotalLength();
+		console.log(lenC);
+		var myPathCR=snapC.path("M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5").attr({
+	  	  id: "wireR",
+		  fill: "none",
+		  strokeWidth: "3",
+		  stroke: "red",
+		  strokeDasharray: lenC+' '+lenC,
+		  strokeDashOffset: lenC
+	    });
+		myPathCR.attr("stroke-dashoffset", lenC);
+		// SVG C - Draw Path
+		myPathC.animate({"stroke-dashoffset": lenC}, 4500, mina.easeinout);
+		myPathCR.animate({"stroke-dashoffset": 0}, 4500, mina.easeinout);
+
+
+	  });
+	</script>
+  </head>
+  <body role="document" id="all" style="">
+	<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+     width="360" height="120"  viewBox="-10 10 360 55" id="svgC">
+<!--
+       <path d="M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5" stroke="#529fd9" stroke-width="2" fill="none" id="wire"></path>
+       <path d="M-1,1.499h83c0,0,10.5,1,10.5,11.25s-10.25,12.25-10.25,12.25h-43.5c0,0-10.75,0.75-11.75,11.5s9.75,12.25,9.75,12.25H343.5" stroke="red" stroke-width="3" fill="none" id="wireR"></path>
+-->
+    </svg>
+  </body>
+</html>
+

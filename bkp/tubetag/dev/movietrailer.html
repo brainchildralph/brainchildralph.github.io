@@ -1,0 +1,758 @@
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <base target="_top">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/js/bootstrap.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.1/css/bootstrap.css" rel="stylesheet">
+<!--
+    <script src="//code.angularjs.org/snapshot/angular.min.js"></script>
+-->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.3/angular.js"></script>
+    <link rel="shortcut icon" href="img/favicon.ico">
+    <title>Tubetag YTPlayer Dev</title>
+    <meta property="og:url" content="https://enhanceralph.github.io/tubetag/dev/movietrailer.html"/>
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content="Learning English From Movie Trailer "/>
+    <meta property="og:description" content="Transformers(The Last Knight), Spider-Man(Homecoming), Justice League..." />
+    <meta property="og:image" content="https://i.ytimg.com/vi/AntcyqJ6brc/default.jpg" />
+  </head>
+  <body ng-app="app" class="container">
+  <div class="theme-showcase">
+      <tubetagrepeaterroot></tubetagrepeaterroot>
+  </div>
+  <style>
+  .scriptfont {
+    font-size:16px;
+  }
+  .scriptfontsel {
+    font-size:16px;
+    color:blue;
+  }
+  .icon-stack {
+    position: relative;
+    display:inline-block;
+    left:-5px;
+    top:-10px;
+    width:12px;
+  }
+  .icon-stack .glyphicon {
+    position: absolute; 
+  }
+  </style>
+  <script>
+  function ytf_loadScriptBylangcode(vid, code, func){
+    var transcriptArray=[]; 
+    $.ajax({
+      url:'https://www.youtube.com/api/timedtext?type=list&v='+vid,
+      type: 'GET',
+      dataType: 'xml',
+      timeout: 5000,
+      crossDomain: true,
+      error: function(xml){
+        //alert("err: "+xml);
+      },
+      success: function(xml){
+        var name=[];
+        var lang_code=[];
+        var i;
+        $(xml).find("track").each(function(i){
+          name.push($(this).attr("name"));
+          //console.log("name["+i+"]: "+name[i]);
+          if(typeof(name[i])=='undefined') name[i]='';
+          lang_code.push($(this).attr("lang_code"));
+        });
+        if(lang_code.length==0){
+          if(func!==undefined){
+            func(transcriptArray);
+            return; 
+          }
+        }
+		//console.log('find lang_code "'+code+'"');
+        for(i=0; i<lang_code.length; i++){
+          if(lang_code[i].indexOf(code)!==-1){
+			console.log("find lang_code success!!");
+            break;
+          }
+        }
+        if(i==lang_code.length){
+		  console.log("find lang_code failed!!");
+          i=0;
+        }
+        //console.log('lang_code: "'+lang_code[i]+'", name: "'+name[i]+'"');
+        $.ajax({
+          url:'https://www.youtube.com/api/timedtext?v='+vid+'&lang='+lang_code[i]+'&name='+name[i],
+          type: 'GET',
+          dataType: 'xml',
+          timeout: 1000,
+          crossDomain: true,
+          error: function(xml){
+            if(func!==undefined){
+              func(transcriptArray);
+            }
+          },
+          success: function(xml){
+            scriptArray=[];
+            $(xml).find("text").each(function(i){
+              var startTime=0, dur=0;
+              var endTime=0;
+              var scriptData={}; 
+              startTime=parseFloat($(this).attr("start"));
+              dur=parseFloat($(this).attr("dur"));
+              startTime=parseFloat(startTime.toFixed(3));
+              dur=parseFloat(dur.toFixed(3));
+              endTime=startTime+dur;
+              endTime=parseFloat(endTime);
+              endTime=parseFloat(endTime.toFixed(3));
+              scriptData.pid=i;
+              scriptData.start=startTime; 
+              scriptData.end=endTime; 
+              scriptData.text=$(this).text(); 
+              transcriptArray.push(scriptData);
+            });
+            if(func!==undefined){
+              func(transcriptArray);
+            }
+          }
+        });
+      }
+    });
+  }
+  function ytf_translateScripts(f,t,s,func){
+    $.ajax({
+      url: 'https://script.google.com/macros/s/AKfycbxrRFGsxo1cqIxAV_OJ57PVN1UNGLLIShQdgz5Fci4xo5oA-Kii/exec',
+//      url:'https://script.google.com/macros/s/AKfycbzgRmpsUWeN5P-fDYKv6bEXQYpKJfyMJbfFeboqOyAO/dev',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'from':f,
+        'to':t,
+        'scripts':s
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+  function ytf_loadVideoList(t,func){
+    $.ajax({
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'target':'videolist',
+        'user':'test user',
+        'type':t,
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+  function ytf_loadTranscript(v,l,func){
+    $.ajax({
+      url:'https://script.google.com/macros/s/AKfycbyz39OdhCxWehLttbwdhIqyocqw44DMZyfGSx5Uk29o3zReQMw/exec',
+      type: 'GET',
+      dataType: "jsonp",
+      crossDomain: true,
+      cache:false,
+      data:{
+        'act':'get',
+        'target':'transcript',
+        'user':'test user',
+        'vid':v,
+        'lang':l,
+      },
+      success: function(data){
+        func(data);
+      }
+    });
+  }
+
+/*
+(function() {
+    var link = document.querySelector("link[rel*='icon']") || document.createElement('link');
+    link.type = 'image/x-icon';
+    link.rel = 'shortcut icon';
+    link.href = 'http://www.stackoverflow.com/favicon.ico';
+    document.getElementsByTagName('head')[0].appendChild(link);
+}());
+*/
+</script>
+<script type='text/ng-template' id='root.html'>
+<h3>English Listening - Movie Trailer</h3>
+<hr>
+<ytplayerroot ng-repeat="p in vm.ytplayer" db="p.db" cb="p.cb(m)"></ytplayerroot>
+</script>
+<script>
+  var apps=angular.module('app', [])
+  .component('tubetagrepeaterroot', {
+    templateUrl:'root.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        vm.ytplayer=[]; 
+        vm.iframeapi_pre=0; 
+        vm.iframeapi=0; 
+        ytf_loadVideoList("movietrailer", function(data){
+          $scope.$apply(function(){
+            for(var i=0; i<data.data.length; i++){
+              vm.ytplayer.push(new ytplayer());
+              vm.ytplayer[i].cb({'act':'init','target':'db','data':{'scope':$scope}});
+              vm.ytplayer[i].cb({'act':'set','target':'vid','data':data.data[i][0]});
+            }
+          });
+          if(window.onYouTubeIframeAPIReady==undefined){
+            window.onYouTubeIframeAPIReady=function(){
+              console.log('window.onYouTubeIframeAPIReady ready!!'); 
+              $scope.$apply(function(){
+                for(var i=0; i<vm.ytplayer.length; i++){
+                  vm.ytplayer[i].cb({'act':'set','target':'iframe_api','data':1});
+                }
+              });
+  		    }
+            $.getScript("https://www.youtube.com/iframe_api", function(data, textStatus){
+              console.log("youtube iframe_api get!!");
+            });
+          }else{
+            console.log('window.onYouTubeIframeAPIReady already ready!!'); 
+            $scope.$apply(function(){
+              for(var i=0; i<vm.ytplayer.length; i++){
+                vm.ytplayer[i].cb({'act':'set','target':'iframe_api','data':1});
+              }
+            });
+          }
+        });
+      }
+      this.$doCheck=function(){
+        if(vm.iframeapi_pre!==vm.iframeapi){
+          vm.iframeapi_pre=vm.iframeapi; 
+        }
+      }
+    },
+    controllerAs:'vm'
+  });
+</script>
+<!-- /////////////////////////////////////////////// -->
+<script>
+  function ytplayer(){
+    var vm=this; 
+    this.db={};
+    this.cb=function(m){
+      var act=(m.act==undefined?'':m.act); 
+      var target=(m.target==undefined?'':m.target); 
+      switch(act){
+        case 'init': {
+          if(target=='db'){
+            vm.db={
+              id:vm.cb({'act':'create','target':'id','data':{'len':10}}),
+              vid:'',
+              state:'unstarted',
+              start:0,
+              end:0,
+              wait:1000,//ms
+              waitTimer:undefined,
+              loop:0,
+              duration:0,
+              current:0,
+              ready:0,
+              title:'',
+              timer:undefined,
+              timerIntvl:100,//ms
+              timerPlayIntvl:100,//ms
+              timerWaitIntvl:500,//ms
+              timerStart:function(){
+                vm.db.timerStop();
+                var start=parseFloat(vm.db.start);
+                var end=parseFloat(vm.db.end);
+                var wait=parseFloat(vm.db.wait);
+                vm.db.current=parseFloat(vm.db.player.getCurrentTime());
+                var current=vm.db.current; 
+                vm.scope.$apply();
+                if((parseInt(vm.db.loop)==1)&&(vm.db.state=='playing')){
+                  if(((current>=end)&&(end>start))||(current<start)){
+                    if(wait>0){
+  				      vm.db.player.pauseVideo();
+  				      vm.db.player.seekTo(start);
+                      if(vm.db.waitTimer) clearTimeout(vm.db.waitTimer);
+                      vm.db.waitTimer=setTimeout(function(){
+  				        vm.db.player.playVideo();
+                      }, wait);
+                    }else{
+  				      vm.db.player.seekTo(start);
+  				      vm.db.player.playVideo();
+                    }
+                  }
+                }
+                vm.db.timer=setTimeout(function(){
+                  vm.db.timerStart();
+                }, vm.db.timerIntvl); 
+              },
+              timerStop:function(){
+                if(vm.db.timer) clearTimeout(vm.db.timer);
+              },
+              iframe_api:0,
+              w:320,
+              h:240,
+              player:undefined,
+            }; 
+            if(m.data!==undefined){
+              vm.scope=m.data.scope;
+            }
+          }
+        }
+        break; 
+        case 'get': {
+          if(target=='db'){
+            return this.db; 
+          }
+        }
+        break; 
+        case 'set': {
+          if(m.data!==undefined){
+            vm.db[m.target]=m.data;
+            if(m.target=='loop'&&m.data==0){
+              if(vm.db.waitTimer) clearTimeout(vm.db.waitTimer);
+            }
+          }
+        }
+        break; 
+        case 'control': {
+          if(target=='player'){
+            if(m.data!==undefined){
+              switch(m.data){
+                case 'play':
+                  if(vm.db.waitTimer) clearTimeout(vm.db.waitTimer);
+                  vm.db.player.playVideo();
+                break;
+                case 'playAtStart':
+                  if(vm.db.waitTimer) clearTimeout(vm.db.waitTimer);
+                  vm.db.player.seekTo(vm.db.start);
+                  vm.db.player.playVideo();
+                break;
+                case 'pause':
+                  vm.db.player.pauseVideo();
+                break;
+              }
+            }
+          }
+        }
+        break; 
+        case 'create': {
+          if(target=='id'){
+      	    var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            if(m.data==undefined){
+              m.data={'len':5}; 
+            }
+            for( var i=0; i < m.data.len; i++ )
+              text+=possible.charAt(Math.floor(Math.random()*possible.length));
+            return text;
+          }
+          if(target=='player'){
+            if(vm.db.player!==undefined){
+              if(vm.db.player.destroy!==undefined)  vm.db.player.destroy();
+              vm.db.player=undefined; 
+            }
+            vm.db.player=new YT.Player(vm.db.id, {
+              height:vm.db.h,
+              width:vm.db.w,
+              videoId:vm.db.vid,
+              playerVars: {
+                //controls: 0,
+                iv_load_policy: 3, // Disables annotations.
+                playsinline:1, //play inline 
+                showinfo:1, // show info when ready
+                //start:20,
+                //end:25,
+                //autoplay:1
+              }
+            });
+            vm.db.player.addEventListener('onReady', function(e){
+              vm.db.ready=1; 
+              vm.db.duration=e.target.getDuration(); 
+              vm.db.title=e.target.getVideoData().title;
+              vm.scope.$apply();
+            });
+            vm.db.player.addEventListener('onStateChange', function(e){
+              var state='unstarted'; 
+              switch(e.data){
+                case -1:
+                 state='unstarted'; 
+                break; 
+                case 0:
+                 state='ended'; 
+                break; 
+                case 1:
+                 state='playing'; 
+                break; 
+                case 2:
+                 state='paused'; 
+                break; 
+                case 3:
+                 state='buffering'; 
+                break; 
+                case 5:
+                 state='cued'; 
+                break; 
+                default:
+                 state='unstarted'; 
+                break; 
+              }
+              vm.db.state=state; 
+              if(e.data==1){
+                vm.db.timerIntvl=vm.db.timerPlayIntvl; 
+                vm.db.timerStart();
+              }else{
+                vm.db.timerIntvl=vm.db.timerWaitIntvl; 
+                vm.db.timerStart();
+              }
+              vm.scope.$apply();
+            });
+          }
+        }
+        break; 
+        default: {
+        }
+        break; 
+      }
+    }
+  }
+  </script>
+  <script type='text/ng-template' id='ytplayerroot.html'>
+  <h4>{{vm.db.title}}</h4>
+  <hr>
+  <div id="{{vm.db.id}}"></div>
+  <br>
+<!--
+  Status: {{vm.db.state}}<br>
+  Current: {{vm.db.current}} (s)<br>
+  duration: {{vm.db.duration}} (s)<br>
+-->
+  <button ng-show="vm.db.state == 'playing'? false:true" class="btn btn-sm btn-default" ng-click="vm.cb({m:{'act':'control','target':'player','data':'play'}})" ng-disabled="vm.db.ready==1?false:true"><i class="glyphicon glyphicon-play"></i></button>
+  <button ng-show="vm.db.state == 'playing'? true:false" class="btn btn-sm btn-default" ng-click="vm.cb({m:{'act':'control','target':'player','data':'pause'}})"><i class="glyphicon glyphicon-pause"></i></button>
+<!--
+  loop: <input ng-model="vm.db.loop" ng-change="vm.cb({m:{'act':'set','target':'loop','data':vm.db.loop}})" type="checkbox" ng-true-value="1" ng-false-value="0"></input>
+-->
+  <button class="btn btn-sm btn-default" ng-click="vm.db.loop=(vm.db.loop==1?0:1);vm.cb({m:{'act':'set','target':'loop','data':vm.db.loop}})">
+    <i class="glyphicon glyphicon-ok text-primary" ng-show="vm.db.loop==1?true:false"></i>
+    <i class="glyphicon glyphicon-remove text-danger" ng-show="vm.db.loop==1?false:true"></i>
+    <i class="glyphicon glyphicon-repeat"></i>
+  </button>
+<!--
+  start: <input type="text" ng-model="vm.db.start" size="3" ng-blur="vm.cb({m:{'act':'set','target':'start','data':vm.db.start}})"></input>
+  end: <input type="text" ng-model="vm.db.end" size="3" ng-blur="vm.cb({m:{'act':'set','target':'end','data':vm.db.end}})"></input>
+  wait: <input type="text" ng-model="vm.db.wait" size="3" ng-blur="vm.cb({m:{'act':'set','target':'wait','data':vm.db.wait}})"></input>
+-->
+  <button class="btn btn-sm btn-default" ng-click="vm.db.wait=(vm.db.wait==5000?1000:(vm.db.wait+1000))">
+    <i class="glyphicon glyphicon-time text-success"></i>
+    <b>{{vm.db.wait/1000}} (s)</b>
+  </button>
+  <yttranscriptroot db="vm.yttranscript.db" cb="vm.yttranscript.cb(m)" playerdb="vm.db" playercb="vm.cb({'m':m})"></yttranscriptroot>
+  <hr>
+  </script>
+  <script>
+  apps.component('ytplayerroot', {
+    bindings:{'db':'<','cb':'&'}, 
+    templateUrl:'ytplayerroot.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        vm.iframe_api=0;
+        vm.yttranscript=new yttranscript();
+        vm.yttranscript.cb({'act':'init','target':'db','data':{'scope':$scope}});
+      }
+      this.$doCheck=function(){
+        if(vm.db.iframe_api!==undefined){
+          if(vm.iframe_api!==vm.db.iframe_api){
+            vm.iframe_api=vm.db.iframe_api; 
+            if(vm.iframe_api==1)
+              vm.cb({m:{'act':'create','target':'player'}});
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  });
+  </script>
+<!-- /////////////////////////////////////////////// -->
+<script>
+  function yttranscript(){
+    var vm=this; 
+    this.db={};
+    this.cb=function(m){
+      var act=(m.act==undefined?'':m.act); 
+      var target=(m.target==undefined?'':m.target); 
+      switch(act){
+        case 'init': {
+          if(target=='db'){
+            vm.db={
+            }; 
+            if(m.data!==undefined){
+              vm.scope=m.data.scope;
+            }
+          }
+        }
+        break; 
+        case 'get': {
+          if(target=='db'){
+            return this.db; 
+          }
+          if(target=='scripts'){
+            vm.db.scripts=[]; 
+            function parseHtmlEnteties(str) {
+			  return str.replace(/&#([0-9]{1,3});/gi, function(match, numStr) {
+			    var num = parseInt(numStr, 10); // read num as normal number
+			    return String.fromCharCode(num);
+			  });
+			}
+            ytf_loadTranscript(m.data.vid,'en',function(s){
+              var scripts=s.data;
+              vm.scope.$apply(function(){
+                for(var i=0; i<scripts.length; i++){
+                  var start=0, dur=0;
+                  var end=0;
+                  start=parseFloat(scripts[i][0]);
+                  dur=parseFloat(scripts[i][1]);
+                  start=parseFloat(start.toFixed(3));
+                  dur=parseFloat(dur.toFixed(3));
+                  end=start+dur;
+                  end=parseFloat(end);
+                  end=parseFloat(end.toFixed(3));
+                  vm.db.scripts.push({
+                    'start':start,
+                    'end':end,
+                    'text':parseHtmlEnteties(scripts[i][2]),
+                    'translate':''
+                  });
+                }
+              });
+            });
+//old function...
+/*
+            ytf_loadScriptBylangcode(m.data.vid,'en',function(s){
+              vm.scope.$apply(function(){
+                for(var i=0; i<s.length; i++){
+                  s[i].text=parseHtmlEnteties(s[i].text);
+                  s[i].translate=''; 
+                }
+                vm.db.scripts=s; 
+              });
+            });
+*/
+          }
+        }
+        break; 
+        case 'set': {
+          if(m.data!==undefined){
+            vm.db[m.target]=m.data;
+          }
+        }
+        break; 
+        case 'create': {
+          if(target=='id'){
+      	    var text = "";
+            var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            if(m.data==undefined){
+              m.data={'len':5}; 
+            }
+            for( var i=0; i < m.data.len; i++ )
+              text+=possible.charAt(Math.floor(Math.random()*possible.length));
+            return text;
+          }
+        }
+        break; 
+        default: {
+        }
+        break; 
+      }
+    }
+  }
+  </script>
+  <script type='text/ng-template' id='yttranscriptroot.html'>
+  <button class="btn btn-sm btn-default" ng-click="vm.scritpsCollapsed==1?(vm.scritpsCollapsed=0):(vm.scritpsCollapsed=1);vm.scritpsCollapsed==1?(vm.scriptscss='collapse'):(vm.scriptscss='collapse in');">
+    Transcripts
+    <i ng-show="vm.scritpsCollapsed==1?true:false" class="glyphicon glyphicon-chevron-down"></i>
+    <i ng-show="vm.scritpsCollapsed==0?true:false" class="glyphicon glyphicon-chevron-up"></i>
+  </button>
+  <button class="btn btn-sm btn-default" ng-disabled="vm.translateLock==1?true:false" ng-click="vm.translate()" class="btn btn-sm btn-default">譯文</button>
+  <div style="height:300px;overflow-y:scroll;" ng-class="vm.scriptscss">
+    <yttranscriptitems s="s" ng-repeat="s in vm.db.scripts" db="vm.db" cb="vm.cb({'m':m})" playerdb="vm.playerdb" playercb="vm.playercb({'m':m})"></yttranscriptitems>
+  </div>
+  </script>
+  <script>
+  apps.component('yttranscriptroot', {
+    bindings:{'db':'<','cb':'&','playerdb':'<','playercb':'&'}, 
+    templateUrl:'yttranscriptroot.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        vm.scritpsCollapsed=1;
+        vm.scriptscss='collapse';
+        vm.vid=vm.playerdb.vid; 
+        vm.cb({'m':{'act':'get','target':'scripts','data':{'vid':vm.vid}}});
+        vm.translateLock=0; 
+        vm.translate=function(){
+          vm.translateLock=1; 
+          var scripts=[]; 
+          var scriptsTranslated=[]; 
+          var id=0, range=5; 
+          if((vm.db.scripts.length-id)<range) range=vm.db.scripts.length-id; 
+          for(var i=id; i<id+range; i++){
+            scripts.push(vm.db.scripts[i].text);
+          }
+          ytf_translateScriptsLarge(scripts, id);
+          id+=range; 
+          function ytf_translateScriptsLarge(scripts, id){
+            ytf_translateScripts('en','zh-TW',JSON.stringify(scripts), function(data){
+              scripts=data.data;
+              for(var i=0; i<scripts.length; i++) scriptsTranslated.push(scripts[i]);
+              for(var i=0; i<scriptsTranslated.length; i++){
+                if(vm.db.scripts[i].translate=='') vm.db.scripts[i].translate=scriptsTranslated[i];
+              }
+              $scope.$apply();
+              id+=range; 
+              if(id<vm.db.scripts.length){
+                scripts=[];
+                if((vm.db.scripts.length-id)<range){
+                  range=vm.db.scripts.length-id; 
+                }
+                for(var i=id; i<id+range; i++){
+                  scripts.push(vm.db.scripts[i].text);
+				}
+                ytf_translateScriptsLarge(scripts,id);
+              }else{
+                vm.translateLock=0; 
+              }
+            })
+          }
+        }
+      }
+      this.$doCheck=function(){
+        if(vm.vid!==undefined){
+          if(vm.vid!==vm.playerdb.vid){
+            vm.vid=vm.playerdb.vid; 
+            vm.cb({'m':{'act':'get','target':'scripts','data':{'vid':vm.vid}}});
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  });
+  </script>
+  <script type='text/ng-template' id='yttranscriptitems.html'>
+  <button class="btn btn-sm btn-default" ng-show="vm.showpause()" ng-click="vm.pause()" ng-disabled="vm.playerdb.ready==1?false:true">
+    <i class="glyphicon glyphicon-pause"></i>
+  </button>
+  <button class="btn btn-sm btn-default" ng-show="vm.showplay()" ng-click="vm.play()" ng-disabled="vm.playerdb.ready==1?false:true">
+    <i class="glyphicon glyphicon-play"></i>
+  </button>
+  <button class="btn btn-sm btn-default" ng-show="vm.showrepeat()" ng-click="vm.repeat()" ng-disabled="vm.playerdb.ready==1?false:true">
+    <i class="glyphicon glyphicon-repeat"></i>
+  </button>
+  <span ng-class="vm.showtext()">{{vm.s.text}}</span><br>
+  <span ng-class="vm.showtext()" ng-show="vm.s.translate==''?false:true">{{vm.s.translate}}<br></span>
+  </script>
+  <script>
+  apps.component('yttranscriptitems', {
+    bindings:{'db':'<','cb':'&','playerdb':'<','playercb':'&','s':'<'}, 
+    templateUrl:'yttranscriptitems.html',
+    controller:function($scope,$element){
+      var vm=this; 
+      this.$onInit=function(){
+        vm.focus=0; 
+        vm.play=function(){
+          vm.playercb({m:{'act':'set','target':'start','data':vm.s.start}})
+          vm.playercb({m:{'act':'set','target':'end','data':vm.s.end}})
+          vm.playercb({m:{'act':'control','target':'player','data':'playAtStart'}})
+        }
+        vm.pause=function(){
+          vm.playercb({m:{'act':'control','target':'player','data':'pause'}})
+        }
+        vm.repeat=function(){
+          vm.playercb({m:{'act':'set','target':'start','data':vm.s.start}})
+          vm.playercb({m:{'act':'set','target':'end','data':vm.s.end}})
+          vm.playercb({m:{'act':'control','target':'player','data':'play'}})
+        }
+        vm.showtext=function(){
+          var current=parseFloat(vm.playerdb.current);
+          var s_start=parseFloat(vm.s.start);
+          var s_end=parseFloat(vm.s.end);
+          if((current>=s_start)&&(current<s_end)){
+            if(vm.focus==0){
+		      var scrollTopVal=$($element).offset().top-$($element).parent().offset().top+$($element).parent().scrollTop()-15; 
+		      $($element).parent().scrollTop(scrollTopVal);
+              vm.focus=1; 
+            }
+            return 'scriptfontsel'; 
+          }else{
+            vm.focus=0; 
+            return 'scriptfont'; 
+          }
+        }
+        vm.showplay=function(){
+          var current=parseFloat(vm.playerdb.current);
+          var s_start=parseFloat(vm.s.start);
+          var s_end=parseFloat(vm.s.end);
+          if(vm.playerdb.loop==1){
+            return false; 
+          }else{
+            if((current<s_start)||(current>s_end)){
+              return true; 
+            }
+            if(vm.playerdb.state=='playing'){
+              return false; 
+            }else{
+              return true; 
+            }
+          }
+        }
+        vm.showpause=function(){
+          var current=parseFloat(vm.playerdb.current);
+          var s_start=parseFloat(vm.s.start);
+          var s_end=parseFloat(vm.s.end);
+          if(vm.playerdb.state!=='playing'){
+            return false; 
+          }else{
+            if((current<s_start)||(current>s_end)){
+              return false; 
+            }
+            return true; 
+          }
+        }
+        vm.showrepeat=function(){
+          var current=parseFloat(vm.playerdb.current);
+          var s_start=parseFloat(vm.s.start);
+          var s_end=parseFloat(vm.s.end);
+          if(vm.playerdb.loop==0){
+            return false; 
+          }else{
+            if((current<s_start)||(current>s_end)){
+              return true; 
+            }
+            if(vm.playerdb.state=='playing'){
+              return false; 
+            }else{
+              return true; 
+            }
+          }
+        }
+      }
+    },
+    controllerAs:'vm'
+  });
+  </script>
+<!-- /////////////////////////////////////////////// -->
+  </body>
+</html>
+
+

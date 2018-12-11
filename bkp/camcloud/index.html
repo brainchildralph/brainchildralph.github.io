@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<head>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">   
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+<META HTTP-EQUIV="Expires" CONTENT="0"> 
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<!--
+<script language="javascript" type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+-->
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<script language='javascript' type="text/javascript">
+window.addEventListener('unload', function() {
+	console.log('unload');
+	console.log(arguments);
+}, true);
+window.addEventListener('beforeunload', function() {
+	console.log('beforeunload');
+	console.log(arguments);
+	//return 'are you sure you want to navigate away?';
+}, true);
+window.onbeforeunload = function() {
+	console.log('inline onbeforeunload');
+	console.log(arguments);
+	for(var i=0; i<portRange; i++){
+		serverConnection[i].close();
+	}
+	//return 'inline onbeforeunload. Sure?';
+};
+</script>
+</head>
+<body>
+<div id="camnetarea" style="height:200px">
+<video style="" autoplay id="vplayer" width="200px" height="150px"></video>
+<canvas style="display:none" width="200px" height="150px" id="canvasshow"></canvas>
+</div>
+<script>
+var video = document.getElementById('vplayer');
+var canvas = document.getElementById('canvasshow');
+var ctx = canvas.getContext('2d');
+var video_loop=0; 
+
+function setCookie(name, value) {                             
+	var argv = setCookie.arguments;                       
+	var argc = setCookie.arguments.length;                 
+	var expires = (argc > 2) ? argv[2] : null;            
+	var path = (argc > 3) ? argv[3] : null;               
+	var domain = (argc > 4) ? argv[4] : null;             
+	var secure = (argc > 5) ? argv[5] : null;                                  
+	document.cookie = escape(name) + "=" + escape(value) +                     
+		((expires == null) ? "" : ("; expires=" + expires.toGMTString())) +
+		((path == null) ? "" : ("; path=" + path)) +                       
+		((domain == null) ? "" : ("; domain=" + domain)) +                 
+		((secure == null) ? "" : ("; secure=" + secure));                  
+}                                                                                  
+
+function delCookie(name) {                                                         
+	var expDate = new Date();                                                  
+	expDate.setTime(expDate.getTime()-1);                                      
+	document.cookie = escape(name) + "=; expires=" + expDate.toGMTString();    
+}                                                                                  
+
+function getCookie(name)                                                           
+{                                                                                  
+	var value = document.cookie;                                               
+	var start = value.indexOf(" " + name + "=");                               
+	if (start == -1)                                                           
+	{                                                                          
+		start = value.indexOf(name + "=");                                 
+	}                                                                          
+	if (start == -1)                                                           
+	{                                                                          
+		value = null;                                                      
+	}                                                                          
+	else                                                                       
+	{                                                                          
+		start = value.indexOf("=", start) + 1;                             
+		var end = value.indexOf(";", start);                               
+		if (end == -1)                                                     
+		{                                                                  
+			end = value.length;                                        
+		}                                                                  
+		value = unescape(value.substring(start,end));                      
+	}                                                                          
+	return value;                                                              
+}   
+
+
+function makeid(size)
+{
+	var text = "";
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	for( var i=0; i < size; i++ )
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var audioContext = window.AudioContext;
+var context = new audioContext();
+
+var sampleRate = null;
+
+var videoStream = null;
+
+var url = window.URL || window.webkitURL;
+
+var renderTimer;
+
+function initializeRecorderVideo(stream) {
+	video.src = url ? url.createObjectURL(stream) : stream;
+	video.play();
+	videoStream = stream; 
+	//setInterval(render, 40);
+	if(renderTimer) clearTimeout(renderTimer);
+	renderTimer=setTimeout(render, 80);
+}
+
+var ResponseProfile=0;
+var render=function(){
+	ctx.drawImage(video, 0, 0, 200, 150);
+	var b64jpeg = canvas.toDataURL("image/jpeg", 0.5);
+	var msg=JSON.stringify({
+		'Camera':b64jpeg,
+	});
+	var videoCon=Math.floor(Math.random()*portRange);
+	videoCon=0; 
+	try {
+		//console.log("send!!");
+		serverConnection[videoCon].send(msg);
+	}
+	catch (e) {
+		// handle error
+	}
+	setTimeout(render, 80);
+}; 
+
+var portBase=80;
+var portRange=1; 
+var serverConnection=[]; 
+var deviceid; 
+if(window.location.hash!==""){
+	var deviceid=window.location.hash.substring(1); 
+}else{
+	var deviceid="3a65cp99"; 
+}
+var srvUrl='iot.status.com.tw:80/deviceid/'+deviceid; 
+
+console.log("hash:"+window.location.hash.substring(1));
+
+function wsconnect(){
+	serverConnection=[]; 
+	for(var i=0; i<portRange; i++){
+		//serverConnection.push(new WebSocket('ws://'+srvIp+':'+port));
+		serverConnection.push(new WebSocket('ws://'+srvUrl));
+		//serverConnection.push(new WebSocket('ws://'+srvIp+':'+port, "lws-mirror-protocol"));
+		serverConnection[i].binaryType="arraybuffer";
+		serverConnection[i].onmessage = onmsg; 
+		serverConnection[i].onclose = onclose; 
+	}
+}
+
+wsconnect();
+
+var isoaudiobufferoffset=0; 
+var isoaudiobufferlen=4096;
+var isoaudiojitter=100; 
+var isoaudiobuffer=new Float32Array(isoaudiobufferlen);
+
+function encode(input) {
+	var keyStr =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	var output = "";
+	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	var i = 0;
+
+	while (i < input.length) {
+		chr1 = input[i++];
+		chr2 = i < input.length ? input[i++] : Number.NaN;
+		chr3 = i < input.length ? input[i++] : Number.NaN;
+
+		enc1 = chr1 >> 2;
+		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+		enc4 = chr3 & 63;
+
+		if (isNaN(chr2)) {
+			enc3 = enc4 = 64;
+		} else if (isNaN(chr3)) {
+			enc4 = 64;
+		}
+		output += keyStr.charAt(enc1) + keyStr.charAt(enc2) + 
+			keyStr.charAt(enc3) + keyStr.charAt(enc4);
+	}
+	return output;
+}
+
+function onclose(e){
+	console.log("onclose!!");
+    setTimeout(function () {
+        // Connection has closed so try to reconnect every 10 seconds.
+		wsconnect();
+    }, 5*1000);
+}
+
+function onmsg(e){
+	var data;
+	var type;
+	if(e.data instanceof Blob){
+		//console.log("Blob!!");
+	}else if(e.data instanceof ArrayBuffer){
+	}else{
+		//console.log("Text!!");
+		data=$.parseJSON(e.data);
+		type=data.type;
+		console.log(data.type);
+	}
+	switch(type){
+		case 'RequestProfile':
+			ResponseProfile=0; 
+			var msg=JSON.stringify({
+				"origin": "Device",
+				"type": "ResponseProfile", 
+				"dstId": "", 
+				"content": { "Camera": "" } 
+			});
+			serverConnection[0].send(msg);
+			ResponseProfile=1; 
+			break; 
+	}
+	return 0; 
+
+};
+
+function onError(error){
+	console.log("navigator.getUserMedia error: ", error);
+}
+
+if (typeof MediaStreamTrack === 'undefined'){
+	alert('This browser does not support MediaStreamTrack.\n\nTry Chrome Canary.');
+} else {
+}
+
+function startConfCall(){
+	if(videoStream!==null){
+		video.src=null; 
+		videoStream.stop();
+	}
+	if(renderTimer) clearTimeout(renderTimer);
+	navigator.getUserMedia({video:{optional: [{sourceId: 0}]}}, initializeRecorderVideo, onError);
+}
+
+startConfCall();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+    <title>俊霖便當</title>
+	<link rel="shortcut icon" href="img/favicon.ico">
+	<link href="css/bootstrap.css" rel="stylesheet">
+	<link href="css/bootstrap-editable.css" rel="stylesheet">
+<!--
+	<link href="css/bootstrap-combined.min.css" rel="stylesheet">
+-->
+	<link href="css/carousel.css" rel="stylesheet">
+  </head>
+  <body role="document" id="all" style="display:none">
+	<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+		<div class="container">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+					<span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="#">俊霖便當</a>
+			</div>
+			<div class="navbar-collapse collapse">
+				<ul class="nav navbar-nav">
+					<li><a href="#aboutJune">關於俊霖</a></li>
+					<li class="dropdown"><a href="#about" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">便當小屋<span class="caret"></span></a>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#lunchbox">菜色</a></li>
+						</ul>
+					</li>
+					<li><a href="#contact">聯絡資訊</a></li>
+				</ul>
+			</div>
+		</div>
+	</nav>
+	<div style="height:80px"></div>
+	<div class="container theme-showcase">
+		<div class="row">
+			<div class="col-md-3"></div>
+			<div class="col-md-6">
+				<div class="row">
+					<div class="col-sm-6">
+						<img data-src="js/holder.js/200x200" class="img-thumbnail" alt="200x200" src="img/june001.jpg" data-holder-rendered="true" style="width:200px">
+					</div>
+					<div class="col-sm-6">
+						<table class="table">
+							<thead>
+								<tr>
+									<th>俊霖小檔案</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>開業</td>
+									<td>麥寮工業區實戰兩年</td>
+								</tr>
+								<tr>
+									<td>便當經驗</td>
+									<td>從小做到大</td>
+								</tr>
+								<tr>
+									<td>願景</td>
+									<td>做出健康美味而且飽足的美味便當</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="page-header">
+					<h1 id="aboutJune">關於俊霖</h1>
+				</div>
+				<div class="page-header">
+					<h1 id="backery">便當小屋</h1>
+				</div>
+				<div class="page-header">
+					<h2 id="lunchbox">菜色</h2>
+				</div>
+				<div class="row">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-12" alt="200x200" src="img/lunchbox001.jpg" data-holder-rendered="true" style="">
+				</div>
+				<!--
+				<div class="page-header">
+					<h2 id="pineapplecake"></h2>
+				</div>
+				<div class="row">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc001.jpg" data-holder-rendered="true" style="">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc002.jpg" data-holder-rendered="true" style="">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc003.jpg" data-holder-rendered="true" style="">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc004.jpg" data-holder-rendered="true" style="">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc005.jpg" data-holder-rendered="true" style="">
+					<img data-src="js/holder.js/200x200" class="img-thumbnail col-sm-4" alt="200x200" src="img/pc006.jpg" data-holder-rendered="true" style="">
+				</div>
+				-->
+				<div class="page-header">
+					<h1 id="contact">聯絡資訊</h1>
+				</div>
+				<table class="table">
+					<thead>
+						<tr>
+							<th><span class="glyphicon glyphicon-info-sign"></span></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><span class="glyphicon glyphicon-home"></span></td>
+							<td>雲林縣麥寮鄉工業路</td>
+						</tr>
+						<tr>
+							<td><span class="glyphicon glyphicon-phone"></span></td>
+							<td>(05)691-TEL</td>
+						</tr>
+						<tr>
+							<td><span class="glyphicon glyphicon-envelope"></span></td>
+							<td>lunchbox@mail.com</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="col-md-3"></div>
+		</div>
+	</div>
+	<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+    <script src="js/react-with-addons.js"></script>
+    <script src="js/browser.min.js"></script>
+	<script language="javascript" type="text/javascript" src="js/bootstrap.js"></script>
+	<script language="javascript" type="text/javascript" src="js/bootstrap-editable.js"></script>
+	<script>
+		var sheetURL;
+		var spData = null;
+		var arrayData=[]; 
+		function composeSheetURL(id, no){
+			var url="https://spreadsheets.google.com/feeds/cells/"+id+"/"+no+"/public/values?alt=json-in-script&callback=doData"; 
+			return url; 
+		}
+		function doData(json){
+			spData = json.feed.entry;
+		}
+		function readData(){
+			var data=spData;
+			var rowData=[];
+			var row=0;
+			for (var r=0; r<data.length; r++){
+				var cell=data[r]["gs$cell"];
+				var val=cell["$t"];
+				if (cell.col==1) {
+					rowData=[];
+					arrayData.push(rowData);
+					row++;
+				}
+				rowData.push(val);
+			}
+		}
+	</script>
+	<script>
+		$(document).ready(function(){
+/*
+			sheetURL=composeSheetURL("1OUsdQ1d8y6HHzTTGwEmBSvzq9yKzFVHE7UtQl8Dr07E", 2);
+			$.getScript(sheetURL, function(data, textStatus){
+				readData();
+				console.log(arrayData.length);
+				console.log(arrayData[0]);
+				console.log(arrayData[1]);
+				$("#all").show();
+			});
+*/
+			$("#all").show();
+		});
+	</script>
+  </body>
+</html>
+

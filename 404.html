@@ -1,24 +1,16 @@
 ---
 layout: default
+title: 404 Not found
+permalink: 404.html
+sitemap: false
 ---
 
-<style type="text/css" media="screen">
-  .container {
-    margin: 10px auto;
-    max-width: 600px;
-    text-align: center;
-  }
-  h1 {
-    margin: 30px 0;
-    font-size: 4em;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-</style>
-
-<div class="container">
-  <h1>404</h1>
-
-  <p><strong>Page not found :(</strong></p>
-  <p>The requested page could not be found.</p>
-</div>
+<h1>That page can’t be found</h1>
+<hr>
+<img class="img-post" src="{{ "/img/404/404.png" | prepend: site.baseurl }}" title="404 Not found" alt="404 Not found" width="500">
+<p class="text-center">
+  <a class="btn btn-primary" href="{{ "/" | prepend:site.baseurl }}" role="button">
+    <span>Go home</span>
+    <span class="fa fa-chevron-right"></span>
+  </a>
+</p>

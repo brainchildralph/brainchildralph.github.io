@@ -1,0 +1,37 @@
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="My Parse App">
+	<meta name="viewport" content="width=device-width">
+	<title>TubeTag</title>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.1/jquery.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/react-with-addons.min.js'></script>
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css'>
+	<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap-theme.min.css'>
+	<link rel='stylesheet' href='http://enhanceralph.github.io/tubetag/css/testfont.css'>
+	<script type="text/javascript" src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/react-bootstrap/0.24.5/react-bootstrap.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js'></script>
+	<script type="text/javascript" src='https://cdnjs.cloudflare.com/ajax/libs/fastclick/1.0.6/fastclick.min.js'></script>
+	<script type="text/javascript" src="http://www.parsecdn.com/js/parse-latest.js"></script>
+	<script type="text/javascript" src="js/parsekey.js"></script>
+</head>
+<body>
+	<div id="main"></div>
+	<script type="text/javascript">
+	Parse.initialize(parseappid, parseappkey);
+	var loginUser=Parse.User.current();
+	if(loginUser){
+		console.log("Got loginUser!!");
+		//console.log(loginUser);
+		console.log(loginUser.get('username'));
+		//Parse.User.logOut();  
+		$("#main").load("main.html");
+	}else{
+		console.log("No loginUser!!");
+		$("#main").load("login.html");
+	}
+  </script>
+</body>
+</html>

@@ -2,8 +2,6 @@
 layout: default
 ---
 
-{% include structuredData_index.html %}
-
 <div class="home">
   {%- if page.title -%}
     <h1 class="page-heading">{{ page.title }}</h1>
@@ -20,7 +18,7 @@ layout: default
         <span class="post-meta">{{ post.date | date: date_format }}</span>
         <h3>
           <a class="post-link" href="{{ post.url | relative_url }}">
-		  {% unless post.categories.first %}{% else %}{% raw %}[{% endraw %}{{ post.categories.first }}{% raw %}]{% endraw %} {% endunless %}{{ post.title | escape }}
+            {{ post.title | escape }}
           </a>
         </h3>
         {%- if site.show_excerpts -%}
@@ -30,7 +28,7 @@ layout: default
       {%- endfor -%}
     </ul>
 
-    <p class="feed-subscribe"><svg class="svg-icon orange"><use xlink:href="{{ '/assets/minima-social-icons.svg#rss' | relative_url }}"></use></svg><a href="{{ "/feed.xml" | relative_url }}">Subscribe</a></p>
+    <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | relative_url }}">via RSS</a></p>
   {%- endif -%}
 
 </div>

@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<head>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">   
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+<META HTTP-EQUIV="Expires" CONTENT="0"> 
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<!--
+<script language="javascript" type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+-->
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<script language='javascript' type="text/javascript">
+window.addEventListener('unload', function() {
+	console.log('unload');
+	console.log(arguments);
+}, true);
+window.addEventListener('beforeunload', function() {
+	console.log('beforeunload');
+	console.log(arguments);
+	//return 'are you sure you want to navigate away?';
+}, true);
+window.onbeforeunload = function() {
+	console.log('inline onbeforeunload');
+	console.log(arguments);
+	for(var i=0; i<portRange; i++){
+		serverConnection[i].close();
+	}
+	//return 'inline onbeforeunload. Sure?';
+};
+</script>
+</head>
+<body>
+<div>Latitude: <span id="latitude"></span></div>
+<div>Longitude: <span id="longitude"></span></div>
+<div id="camnetarea" style="height:200px">
+<video style="" autoplay id="vplayer" width="200px" height="150px"></video>
+<canvas style="display:none" width="200px" height="150px" id="canvasshow"></canvas>
+</div>
+<script>
+
+var options = {
+	enableHighAccuracy: true,
+	timeout: 5000,
+	maximumAge: 0
+};
+
+/*
+var latitude="24.828231000000002"; 
+var longitude="121.00794669999999"; 
+
+function success(pos) {
+	var crd = pos.coords;
+
+	console.log('Your current position is:');
+	console.log('Latitude : ' + crd.latitude);
+	console.log('Longitude: ' + crd.longitude);
+	console.log('More or less ' + crd.accuracy + ' meters.');
+	//latitude++;
+	//longitude++; 
+	var msg=JSON.stringify({
+		//'Map':{"latitude":crd.latitude,"longitude":crd.longitude},
+		'Map':{"latitude":latitude,"longitude":longitude},
+	});
+	try {
+		serverConnection[0].send(msg);
+		navigator.geolocation.getCurrentPosition(success, error, options);
+	}
+	catch (e) {
+		// handle error
+	}
+};
+
+function error(err) {
+  console.warn('ERROR(' + err.code + '): ' + err.message);
+};
+
+navigator.geolocation.getCurrentPosition(success, error, options);
+*/
+
+
+
+var latitude, longitude, accuracy;
+var latitudeVal=0, longitudeVal=0, accuracyVal=0;
+
+function setGeolocation() {
+    var geolocation = window.navigator.geolocation.watchPosition( 
+        function ( position ) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude;
+            accuracy = position.coords.accuracy;
+			latitude+=(latitudeVal*0.001);
+			longitude+=(longitudeVal*0.001);
+			$("#latitude").html(latitude);
+			$("#longitude").html(longitude);
+			var msg=JSON.stringify({
+				'Map':{"latitude":latitude,"longitude":longitude},
+			});
+			latitudeVal++; 
+			longitudeVal++; 
+			try {
+				serverConnection[0].send(msg);
+				navigator.geolocation.getCurrentPosition(success, error, options);
+			}
+			catch (e) {
+				// handle error
+			}
+        }, function () { 
+            /*error*/ 
+        }, {
+            maximumAge: 250, 
+            enableHighAccuracy: true
+        } 
+    );
+    window.setTimeout( function () {
+            window.navigator.geolocation.clearWatch( geolocation ) 
+        }, 
+        500 //stop checking after 5 seconds
+    );
+	window.setTimeout( function () {
+			setGeolocation();
+		}, 
+		1000 //check every 30 seconds
+	);
+};
+
+setGeolocation();
+
+/*
+window.setTimeout( function () {
+        setGeolocation();
+    }, 
+    10000 //check every 30 seconds
+);
+*/
+
+
+var video = document.getElementById('vplayer');
+var canvas = document.getElementById('canvasshow');
+var ctx = canvas.getContext('2d');
+var video_loop=0; 
+
+function setCookie(name, value) {                             
+	var argv = setCookie.arguments;                       
+	var argc = setCookie.arguments.length;                 
+	var expires = (argc > 2) ? argv[2] : null;            
+	var path = (argc > 3) ? argv[3] : null;               
+	var domain = (argc > 4) ? argv[4] : null;             
+	var secure = (argc > 5) ? argv[5] : null;                                  
+	document.cookie = escape(name) + "=" + escape(value) +                     
+		((expires == null) ? "" : ("; expires=" + expires.toGMTString())) +
+		((path == null) ? "" : ("; path=" + path)) +                       
+		((domain == null) ? "" : ("; domain=" + domain)) +                 
+		((secure == null) ? "" : ("; secure=" + secure));                  
+}                                                                                  
+
+function delCookie(name) {                                                         
+	var expDate = new Date();                                                  
+	expDate.setTime(expDate.getTime()-1);                                      
+	document.cookie = escape(name) + "=; expires=" + expDate.toGMTString();    
+}                                                                                  
+
+function getCookie(name)                                                           
+{                                                                                  
+	var value = document.cookie;                                               
+	var start = value.indexOf(" " + name + "=");                               
+	if (start == -1)                                                           
+	{                                                                          
+		start = value.indexOf(name + "=");                                 
+	}                                                                          
+	if (start == -1)                                                           
+	{                                                                          
+		value = null;                                                      
+	}                                                                          
+	else                                                                       
+	{                                                                          
+		start = value.indexOf("=", start) + 1;                             
+		var end = value.indexOf(";", start);                               
+		if (end == -1)                                                     
+		{                                                                  
+			end = value.length;                                        
+		}                                                                  
+		value = unescape(value.substring(start,end));                      
+	}                                                                          
+	return value;                                                              
+}   
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var audioContext = window.AudioContext;
+var context = new audioContext();
+
+var sampleRate = null;
+
+var videoStream = null;
+
+var url = window.URL || window.webkitURL;
+
+
+var ResponseProfile=0;
+
+var portBase=80;
+var portRange=1; 
+var serverConnection=[]; 
+var deviceid; 
+if(window.location.hash!==""){
+	var deviceid=window.location.hash.substring(1); 
+}else{
+	var deviceid="3a65cp99"; 
+}
+var srvUrl='iot.status.com.tw:80/deviceid/'+deviceid; 
+
+console.log("hash:"+window.location.hash.substring(1));
+
+function wsconnect(){
+	serverConnection=[]; 
+	for(var i=0; i<portRange; i++){
+		//serverConnection.push(new WebSocket('ws://'+srvIp+':'+port));
+		serverConnection.push(new WebSocket('ws://'+srvUrl));
+		//serverConnection.push(new WebSocket('ws://'+srvIp+':'+port, "lws-mirror-protocol"));
+		serverConnection[i].binaryType="arraybuffer";
+		serverConnection[i].onmessage = onmsg; 
+		serverConnection[i].onclose = onclose; 
+	}
+}
+
+wsconnect();
+
+var isoaudiobufferoffset=0; 
+var isoaudiobufferlen=4096;
+var isoaudiojitter=100; 
+var isoaudiobuffer=new Float32Array(isoaudiobufferlen);
+
+function encode(input) {
+	var keyStr =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	var output = "";
+	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	var i = 0;
+
+	while (i < input.length) {
+		chr1 = input[i++];
+		chr2 = i < input.length ? input[i++] : Number.NaN;
+		chr3 = i < input.length ? input[i++] : Number.NaN;
+
+		enc1 = chr1 >> 2;
+		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+		enc4 = chr3 & 63;
+
+		if (isNaN(chr2)) {
+			enc3 = enc4 = 64;
+		} else if (isNaN(chr3)) {
+			enc4 = 64;
+		}
+		output += keyStr.charAt(enc1) + keyStr.charAt(enc2) + 
+			keyStr.charAt(enc3) + keyStr.charAt(enc4);
+	}
+	return output;
+}
+
+function onclose(e){
+	console.log("onclose!!");
+    setTimeout(function () {
+        // Connection has closed so try to reconnect every 10 seconds.
+		wsconnect();
+    }, 5*1000);
+}
+
+function onmsg(e){
+	var data;
+	var type;
+	if(e.data instanceof Blob){
+		//console.log("Blob!!");
+	}else if(e.data instanceof ArrayBuffer){
+	}else{
+		//console.log("Text!!");
+		data=$.parseJSON(e.data);
+		type=data.type;
+		console.log(data.type);
+	}
+	switch(type){
+		case 'RequestProfile':
+			ResponseProfile=0; 
+			var msg=JSON.stringify({
+				"origin": "Device",
+				"type": "ResponseProfile", 
+				"dstId": "", 
+				"content": { "Map":  { latitude: "", longitude: "" } } 
+			});
+			if(typeof serverConnection[0] !== undefined) serverConnection[0].send(msg);
+			ResponseProfile=1; 
+			break; 
+	}
+	return 0; 
+
+};
+
+function onError(error){
+	console.log("navigator.getUserMedia error: ", error);
+}
+
+if (typeof MediaStreamTrack === 'undefined'){
+	alert('This browser does not support MediaStreamTrack.\n\nTry Chrome Canary.');
+} else {
+}
+
+</script>
+</body>
+</html>

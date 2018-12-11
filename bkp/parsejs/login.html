@@ -1,0 +1,101 @@
+<!doctype html>
+<head>
+	<meta charset="utf-8">
+	<meta name="description" content="My Parse App">
+	<meta name="viewport" content="width=device-width">
+	<title>Login or Register</title>
+</head>
+<body>
+	<div style="text-align:left">
+		<div tabindex="-1" role="dialog" style="display:block;" class="modal" >
+			<div class="modal-dialog" >
+				<div class="modal-content" role="document" >
+					<div aria-label="Close" class="modal-header" >
+						<h4 class="modal-title" >Login</h4>
+					</div>
+					<div class="modal-body" >
+						<form action="/loginCheck" method="post" >
+							<div class="form-group" >
+								<label class="control-label" >
+									<span >Account</span>
+								</label>
+								<input name="name" id="name" type="text" label="Account" placeholder="Enter account" class="form-control" >
+							</div>
+							<div class="form-group" >
+								<label class="control-label" >
+									<span >Password</span>
+								</label>
+								<input id="password" name="password" type="password" label="Password" class="form-control" >
+							</div>
+							<div role="toolbar" class="btn-toolbar" >
+								<button id="login" type="submit" class="btn btn-success" >Login</button>
+								<button id="register" class="btn btn-warning" role="button" >Register</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	Parse.initialize(parseappid, parseappkey);
+    //Parse.initialize("APPLICATION_ID", "JAVASCRIPT_KEY");
+	var loginUser=Parse.User.current();
+	if(loginUser){
+		console.log("Got loginUser!!");
+		console.log(loginUser);
+		console.log(loginUser.get('username'));
+		//Parse.User.logOut();  
+	}else{
+		console.log("No loginUser!!");
+	}
+	function login(e){
+		e.preventDefault();
+		var username=$("#name").val(), password=$("#password").val();
+		console.log("login!!");
+		// Call Parse Login function with those variables
+		Parse.User.logIn(username, password, {
+			// If the username and password matches
+			success: function(user) {
+				console.log(user);
+				alert('Welcome!');
+				console.log(user.get('username'));
+				$("#main").load("main.html");
+/*
+				var TestObject = Parse.Object.extend("TestObject");
+				var testObject = new TestObject();
+				testObject.setACL(new Parse.ACL(Parse.User.current()));
+				testObject.set("foo", "ggg");
+				testObject.save();
+*/
+			},
+			// If there is an error
+			error: function(user, error) {
+				console.log(error);
+			}
+		});
+	}
+	function register(e){
+		e.preventDefault();
+		var user = new Parse.User();
+		user.set("username", $("#name").val());
+		user.set("password", $("#password").val());
+		user.signUp(null, {
+		  success: function(user) {
+			alert("Signup success!!");
+			// Hooray! Let them use the app now.
+		  },
+		  error: function(user, error) {
+			// Show the error message somewhere and let the user try again.
+			alert("Error: " + error.code + " " + error.message);
+		  }
+		});
+	}
+	$("#name").focus();
+	$("#name").keypress(function(e){ if(e.which==13){login(e);} }); 
+	$("#password").keypress(function(e){ if(e.which==13){login(e);} }); 
+	$("#login").click(function(e){ login(e); });
+	$("#register").click(function(e){ register(e); });
+  </script>
+</body>
+</html>

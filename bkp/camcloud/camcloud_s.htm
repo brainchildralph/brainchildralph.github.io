@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<head>
+<META HTTP-EQUIV="Pragma" CONTENT="no-cache">   
+<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+<META HTTP-EQUIV="Expires" CONTENT="0"> 
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<!--
+<script language="javascript" type="text/javascript" src="js/jquery-1.11.0.min.js"></script>
+-->
+<meta http-equiv='Content-Type' content='text/html; charset=UTF-8'>
+<script language='javascript' type="text/javascript">
+window.addEventListener('unload', function() {
+	console.log('unload');
+	console.log(arguments);
+}, true);
+window.addEventListener('beforeunload', function() {
+	console.log('beforeunload');
+	console.log(arguments);
+	//return 'are you sure you want to navigate away?';
+}, true);
+window.onbeforeunload = function() {
+	console.log('inline onbeforeunload');
+	console.log(arguments);
+	for(var i=0; i<portRange; i++){
+		serverConnection[i].close();
+	}
+	//return 'inline onbeforeunload. Sure?';
+};
+</script>
+</head>
+<body>
+<div id="camnetarea" style="height:200px">
+<video style="" autoplay id="vplayer" width="200px" height="150px"></video>
+<canvas style="display:none" width="200px" height="150px" id="canvasshow"></canvas>
+</div>
+<div style="height:130px">
+	<div>
+		<span>Video: </span>
+		<div><select id="videoSource"></select></div>
+		<div>
+			<span>Loop: </span>
+			<input id="video_loop" value="Enable" type="button">
+		</div>
+	</div>
+	<div>
+		<span>Audio: </span>
+		<div><select id="audioSource"></select></div>
+		<div>
+			<span>Micphone: </span>
+			<input id="audio_in" value="Stop" type="button">
+			<span>Speaker: </span>
+			<input id="audio_out" value="Stop" type="button">
+			<span>Loop: </span>
+			<input id="audio_loop" value="Enable" type="button">
+		</div>
+	</div>
+</div>
+<input type="text" id="msginput" style='width:300px'>
+<script>
+$("#msginput").focus();
+$("#msginput").keypress(function(e){
+	if(e.which==13){
+		$("#msgarea").html('<div>'+userid+':&nbsp;&nbsp;'+$("input#msginput").val()+'</div>'+$("#msgarea").html());
+		var msg=JSON.stringify({
+				'id':userid,
+				'type':"text",
+				'msg':$("input#msginput").val(),
+				});
+		$(this).val('');
+		$(this).focus();
+		var msgCon=Math.floor(Math.random()*portRange);
+		try {
+			serverConnection[msgCon].send(msg);
+		}
+		catch (e) {
+			// handle error
+		}
+	}
+}); 
+</script>
+<div>&nbsp;</div>
+<div >Chat Room</div>
+<div id="idmsg"></div>
+<br/>
+<div id="msgarea" style="width:500px;height:300px;overflow:scroll;border:2px;solid:blue"></div>
+<script>
+
+
+var userid=getCookie("videoconf_userid"); 
+if(userid==null){
+	userid=makeid(10);
+	setCookie("videoconf_userid", userid);
+}
+$("#idmsg").html("Your ID:&nbsp;"+userid);
+var video = document.getElementById('vplayer');
+var canvas = document.getElementById('canvasshow');
+var ctx = canvas.getContext('2d');
+var video_loop=0; 
+$("#video_loop").click(function(){
+	if(video_loop==0){
+		video_loop=1; 
+		$("#video_loop").val("Disable");
+		$("#img_"+userid).show();
+	}else{
+		video_loop=0; 
+		$("#img_"+userid).hide(0);
+		$("#video_loop").val("Enable");
+	}
+});
+var audio_out=1; 
+$("#audio_out").click(function(){
+	if(audio_out==0){
+		audio_out=1; 
+		$("#audio_out").val("Stop");
+	}else{
+		audio_out=0; 
+		$("#audio_out").val("Play");
+	}
+});
+var audio_in=1; 
+$("#audio_in").click(function(){
+	if(audio_in==0){
+		audio_in=1; 
+		$("#audio_in").val("Stop");
+	}else{
+		audio_in=0; 
+		$("#audio_in").val("Play");
+	}
+});
+var audio_loop=0; 
+$("#audio_loop").click(function(){
+	if(audio_loop==0){
+		audio_loop=1; 
+		$("#audio_loop").val("Disable");
+	}else{
+		audio_loop=0; 
+		$("#audio_loop").val("Enable");
+	}
+});
+
+function setCookie(name, value) {                             
+	var argv = setCookie.arguments;                       
+	var argc = setCookie.arguments.length;                 
+	var expires = (argc > 2) ? argv[2] : null;            
+	var path = (argc > 3) ? argv[3] : null;               
+	var domain = (argc > 4) ? argv[4] : null;             
+	var secure = (argc > 5) ? argv[5] : null;                                  
+	document.cookie = escape(name) + "=" + escape(value) +                     
+		((expires == null) ? "" : ("; expires=" + expires.toGMTString())) +
+		((path == null) ? "" : ("; path=" + path)) +                       
+		((domain == null) ? "" : ("; domain=" + domain)) +                 
+		((secure == null) ? "" : ("; secure=" + secure));                  
+}                                                                                  
+
+function delCookie(name) {                                                         
+	var expDate = new Date();                                                  
+	expDate.setTime(expDate.getTime()-1);                                      
+	document.cookie = escape(name) + "=; expires=" + expDate.toGMTString();    
+}                                                                                  
+
+function getCookie(name)                                                           
+{                                                                                  
+	var value = document.cookie;                                               
+	var start = value.indexOf(" " + name + "=");                               
+	if (start == -1)                                                           
+	{                                                                          
+		start = value.indexOf(name + "=");                                 
+	}                                                                          
+	if (start == -1)                                                           
+	{                                                                          
+		value = null;                                                      
+	}                                                                          
+	else                                                                       
+	{                                                                          
+		start = value.indexOf("=", start) + 1;                             
+		var end = value.indexOf(";", start);                               
+		if (end == -1)                                                     
+		{                                                                  
+			end = value.length;                                        
+		}                                                                  
+		value = unescape(value.substring(start,end));                      
+	}                                                                          
+	return value;                                                              
+}   
+
+
+function makeid(size)
+{
+	var text = "";
+	var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	for( var i=0; i < size; i++ )
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+var audioContext = window.AudioContext;
+var context = new audioContext();
+
+var sampleRate = null;
+
+var videoStream = null;
+
+var url = window.URL || window.webkitURL;
+var audioInput = null;
+var recorder = null;
+function initializeRecorderAudio(stream) {
+	sampleRate = context.sampleRate;
+	audioInput = context.createMediaStreamSource(stream);
+	// create a javascript node
+	if(recorder == null){
+		recorder = context.createScriptProcessor(bufferSize, 2, 2);
+		// specify the processing function
+		recorder.onaudioprocess = recorderProcess;
+	}
+	// connect stream to our recorder
+	audioInput.connect(recorder);
+	// connect our recorder to the previous destination
+	recorder.connect(context.destination);
+
+}
+
+var renderTimer;
+var keepAliveTimer;
+
+function initializeRecorderVideo(stream) {
+	video.src = url ? url.createObjectURL(stream) : stream;
+	video.play();
+	videoStream = stream; 
+	//setInterval(render, 40);
+	if(renderTimer) clearTimeout(renderTimer);
+	renderTimer=setTimeout(render, 80);
+	keepAliveTimer=setTimeout(keepalive, 1000);
+}
+
+var ResponseProfile=0;
+var render=function(){
+/*
+	if(video_loop==0){
+		setTimeout(render, 40);
+		return; 
+	}
+*/
+	ctx.drawImage(video, 0, 0, 200, 150);
+	var b64jpeg = canvas.toDataURL("image/jpeg", 0.5);
+	var msg=JSON.stringify({
+		'Camera':b64jpeg,
+	});
+	var videoCon=Math.floor(Math.random()*portRange);
+	videoCon=0; 
+	try {
+		//console.log("send!!");
+		serverConnection[videoCon].send(msg);
+	}
+	catch (e) {
+		// handle error
+	}
+	setTimeout(render, 80);
+}; 
+
+var keepalive=function(){
+	return; 
+	var msg=JSON.stringify({
+			'id':userid,
+			'type':"keepalive",
+			});
+	for(var i=0; i<portRange; i++){
+		serverConnection[i].send(msg);
+	}
+	setTimeout(keepalive, 1000);
+}; 
+
+var audioTypeCode=1111;
+function recorderProcess(e) {
+	return; 
+	if(audio_in==0) return; 
+	var left = e.inputBuffer.getChannelData(0);
+/*
+	for(var i=0; i<left.length; i++){
+		left[i]=Math.floor(left[i]*0x7FFF);
+	}
+*/
+	//var leftmsg=btoa(JSON.stringify({"left":left}));
+	//var compressed=Base64String.compress(leftmsg);
+	var leftmsg=JSON.stringify({"left":left});
+	var compressed=leftmsg; 
+	var msg=JSON.stringify({
+			'id':userid,
+			'type':"audio",
+			'leftmsg':compressed,
+			'leftSize':left.length
+			});
+	var audioCon=Math.floor(Math.random()*portRange);
+	try {
+		serverConnection[audioCon].send(msg);
+	}
+	catch (e) {
+		// handle error
+	}
+/*
+	var buf=new Float32Array(bufferSize+18);
+	for(var i=0; i<10; i++){
+		buf[i]=userid.charCodeAt(i);
+	}
+	buf[10]=audioTypeCode; 
+	buf.set(left,18);
+	//console.log(buf);
+	var audioCon=Math.floor(Math.random()*portRange);
+	audioCon=1; 
+	try {
+		serverConnection[audioCon].send(buf);
+	}
+	catch (e) {
+		// handle error
+	}
+*/
+	return;
+}
+
+var bufferCount=0; 
+var bufferSize = 4096;
+var bufferTimes=10; 
+var jitterBuffer=200; 
+var BufferfloatArray=new Float32Array(bufferSize*bufferTimes); 
+//confcall profile
+var cp={
+	init:function(){
+		cp.user.delalluser();
+		this.user.id=userid; 
+		cp.user.adduserbyid(userid);
+	},
+	user:{
+		"id":"",
+		count:0,
+		users:{},
+		dumpusers:function(){
+			console.log("user count: "+cp.user.count);
+			for(var key in cp.user.users){
+				console.log("id: "+key);
+			}
+		},
+		checkuserbyid:function(id){
+			if(cp.user.users[id]!==undefined){
+				return 1; 
+			}else{
+				return 0; 
+			}
+		},
+		adduserbyid:function(id){
+			if(cp.user.checkuserbyid(id)==0){
+				cp.user.users[id]={init:1}; 
+				cp.user.users[id].BufferfloatArray=new Float32Array(bufferSize*bufferTimes); 
+				cp.user.users[id].bufferTimes=bufferTimes; 
+				cp.user.users[id].bufferCount=0; 
+				cp.user.users[id].jitterBuffer=jitterBuffer; 
+				cp.user.users[id].videoCount=0; 
+				cp.user.users[id].videoTimes=10; 
+				cp.user.count++; 
+			}
+		},
+		deluserbyid:function(id){
+			delete cp.user.users[id]; 
+		},
+		delalluser:function(){
+			for(var key in cp.user.users){
+				delete cp.user.users[key]; 
+			}
+		}
+	},
+	video:{
+	},
+	audio:{
+	}
+}; 
+
+cp.init();
+
+var portBase=3434;
+var portRange=10; 
+//var portBase=80;
+var portRange=1; 
+//var portBase=3436;
+//var portRange=2; 
+var serverConnection=[]; 
+var srvIp='192.168.2.127'; 
+var deviceid; 
+if(window.location.hash!==""){
+	var deviceid=window.location.hash.substring(1); 
+}else{
+	var deviceid="3a65cp99"; 
+}
+var srvUrl='iot.status.com.tw:80/deviceid/'+deviceid; 
+//var srvIp='192.168.2.142:80/deviceid/3a65cp80'; 
+//var srvIp='192.168.2.133'; 
+//var srvIp='192.168.2.178'; 
+console.log("hash:"+window.location.hash.substring(1));
+
+function wsconnect(){
+	serverConnection=[]; 
+	for(var i=0; i<portRange; i++){
+		var port=portBase+i; 
+		//serverConnection.push(new WebSocket('wss://'+srvIp+':'+port));
+		serverConnection.push(new WebSocket('wss://'+srvUrl));
+		//serverConnection.push(new WebSocket('wss://'+srvIp+':'+port, "lws-mirror-protocol"));
+		serverConnection[i].binaryType="arraybuffer";
+		serverConnection[i].onmessage = onmsg; 
+		serverConnection[i].onclose = onclose; 
+	}
+}
+
+wsconnect();
+
+function keepWebsocketConnection(){
+	return; 
+}
+
+var isoaudiobufferoffset=0; 
+var isoaudiobufferlen=4096;
+var isoaudiojitter=100; 
+var isoaudiobuffer=new Float32Array(isoaudiobufferlen);
+
+function encode(input) {
+	var keyStr =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	var output = "";
+	var chr1, chr2, chr3, enc1, enc2, enc3, enc4;
+	var i = 0;
+
+	while (i < input.length) {
+		chr1 = input[i++];
+		chr2 = i < input.length ? input[i++] : Number.NaN;
+		chr3 = i < input.length ? input[i++] : Number.NaN;
+
+		enc1 = chr1 >> 2;
+		enc2 = ((chr1 & 3) << 4) | (chr2 >> 4);
+		enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
+		enc4 = chr3 & 63;
+
+		if (isNaN(chr2)) {
+			enc3 = enc4 = 64;
+		} else if (isNaN(chr3)) {
+			enc4 = 64;
+		}
+		output += keyStr.charAt(enc1) + keyStr.charAt(enc2) + 
+			keyStr.charAt(enc3) + keyStr.charAt(enc4);
+	}
+	return output;
+}
+
+function onclose(e){
+	console.log("onclose!!");
+    setTimeout(function () {
+        // Connection has closed so try to reconnect every 10 seconds.
+		wsconnect();
+    }, 5*1000);
+}
+
+function onmsg(e){
+	var data;
+	var type;
+	if(keepWebsocketConnection()==0) return; 
+	if(e.data instanceof Blob){
+		//console.log("Blob!!");
+	}else if(e.data instanceof ArrayBuffer){
+		var float32Buf=new Float32Array(e.data);
+		var useridf32=""; 
+		data=e.data; 
+		if(float32Buf[10]==audioTypeCode){
+			for(var i=0; i<10; i++){
+				useridf32+=String.fromCharCode(float32Buf[i]); 
+			}
+			data.id=useridf32; 
+			data.left=new Float32Array(e.data,18*4);
+		}
+		type="audio"; 
+	}else{
+		console.log("Text!!");
+		data=$.parseJSON(e.data);
+		type=data.type;
+		console.log(data.type);
+	}
+	cp.user.adduserbyid(data.id);
+	//cp.user.dumpusers(cp);
+	switch(type){
+		case 'RequestProfile':
+			ResponseProfile=0; 
+			var msg=JSON.stringify({
+				"origin": "Device",
+				"type": "ResponseProfile", 
+				"dstId": "", 
+				"content": { "Camera": "" } 
+			});
+			serverConnection[0].send(msg);
+			ResponseProfile=1; 
+			break; 
+		case 'audio':
+			if(audio_out==0) return; 
+			if(((data.id==userid)&&(audio_loop==1))||(data.id!==userid)){
+				//var left=data.left;
+				//var decompressed=Base64String.decompress(data.leftmsg);
+				var decompressed=data.leftmsg;
+				//var dejson=$.parseJSON(atob(decompressed));
+				var dejson=$.parseJSON(decompressed);
+				var left=dejson.left;
+				var bufOffset=cp.user.users[data.id].bufferCount*bufferSize;
+				for(var i=0; i<bufferSize; i++){
+					cp.user.users[data.id].BufferfloatArray[bufOffset+i]=(left[i]); 
+					//cp.user.users[data.id].BufferfloatArray[bufOffset+i]=(left[i]/0x7FFF); 
+				}
+				cp.user.users[data.id].bufferCount++;
+				if(cp.user.users[data.id].bufferCount==cp.user.users[data.id].bufferTimes){
+					var audioSrc = context.createBufferSource();
+					var audioBuffer = context.createBuffer(1, bufferSize*cp.user.users[data.id].bufferTimes-cp.user.users[data.id].jitterBuffer, 48000);
+					var BufferfloatArray=new Float32Array(bufferSize*bufferTimes-cp.user.users[data.id].jitterBuffer); 
+					for(var i=0; i<bufferSize*cp.user.users[data.id].bufferTimes-cp.user.users[data.id].jitterBuffer; i++){
+						BufferfloatArray[i]=cp.user.users[data.id].BufferfloatArray[i]; 
+					}
+					audioBuffer.getChannelData(0).set(BufferfloatArray);
+					audioSrc.buffer = audioBuffer;
+					audioSrc.connect(context.destination);
+					audioSrc.start(0);
+					cp.user.users[data.id].bufferCount=0; 
+				}
+			}
+			break; 
+		case 'video':
+			if(((data.id==userid)&&(video_loop==1))||(data.id!==userid)){
+				if(document.getElementById("img_"+data.id)==null){
+					$("#camnetarea").append("<img width='200px' height='150px' id='img_"+data.id+"'></img>");
+				}
+				cp.user.users[data.id].videoCount++; 
+				if(cp.user.users[data.id].videoCount==cp.user.users[data.id].videoTimes){
+					cp.user.users[data.id].videoCount=0; 
+				}else{
+					if(cp.user.users[data.id].videoCount<8){
+						$("#img_"+data.id).attr("src",data.b64jpeg);
+					}
+				}
+			}
+			break; 
+		case 'keepalive':
+			break; 
+		case 'text':
+			if(data.id!==userid){
+				$("#msgarea").html('<div>'+data.id+':'+data.msg+'</div>'+$("#msgarea").html());
+			}
+			break; 
+		case 'isovideo':
+			console.log(data.size);
+			if(document.getElementById("img_"+data.id)==null){
+				$("#camnetarea").append("<img width='200px' height='150px' id='img_"+data.id+"'></img>");
+			}
+			var decompressed=data.jpgmsg;
+			var dejson=$.parseJSON(decompressed);
+			var jpg=dejson.jpg;
+			var ab = new ArrayBuffer(data.size);
+			var buf = new Uint8Array(ab);
+			for(var i=0; i<data.size; i++){
+				buf[i]=jpg[i]; 
+			}
+			//ctx.putImageData(buf, 0, 0);
+			var b64jpeg = btoa(String.fromCharCode.apply(null, buf));
+			//var b64jpeg = encode(buf); 
+			//console.log(b64jpeg);
+			cp.user.users[data.id].videoCount++; 
+			if(cp.user.users[data.id].videoCount==cp.user.users[data.id].videoTimes){
+				cp.user.users[data.id].videoCount=0; 
+			}else{
+				if(cp.user.users[data.id].videoCount<8){
+					$("#img_"+data.id).attr("src","data:image/jpeg;base64,"+b64jpeg);
+				}
+			}
+			break; 
+		case 'isoaudio':
+			console.log(data.leftsize);
+			var decompressed=data.leftmsg;
+			var dejson=$.parseJSON(decompressed);
+			var left=dejson.left;
+			var ab = new ArrayBuffer(data.leftsize);
+			var buf = new Uint8Array(ab);
+			for (var i = 0; i < Math.floor(data.leftsize/2); i++){ 
+				buf[2*i] = left[2*i+1] & 0xff;
+				buf[2*i+1] = left[2*i] & 0xff;
+			}
+			var dv=new DataView(ab);
+			var f32buf=new Float32Array(Math.floor(data.leftsize/2));
+			for(var i=0; i<Math.floor(data.leftsize/2); i++){
+				f32buf[i]=(dv.getInt16(2*i)/32767.0);
+			}
+/*
+			var audioSrc = context.createBufferSource();
+			var audioBuffer = context.createBuffer(1, Math.floor(data.leftsize/2),8000);
+			audioBuffer.getChannelData(0).set(f32buf); 
+			audioSrc.buffer = audioBuffer;
+			audioSrc.connect(context.destination);
+			audioSrc.start(0);
+			return; 
+*/
+			if((isoaudiobufferoffset+Math.floor(data.leftsize/2))>isoaudiobufferlen){
+				var outputbuffer=new Float32Array(isoaudiobufferoffset);
+				for(var i=0; i<isoaudiobufferoffset-isoaudiojitter; i++){
+					outputbuffer[i]=isoaudiobuffer[i]; 
+				}
+				var audioSrc = context.createBufferSource();
+				var audioBuffer = context.createBuffer(1,isoaudiobufferoffset,8000);
+				audioBuffer.getChannelData(0).set(outputbuffer); 
+				audioSrc.buffer = audioBuffer;
+				audioSrc.connect(context.destination);
+				audioSrc.start(0);
+				isoaudiobufferoffset=0; 
+			}else{
+				for(var i=0; i<Math.floor(data.leftsize/2); i++){
+					isoaudiobuffer[i+isoaudiobufferoffset]=f32buf[i]; 
+				}
+				isoaudiobufferoffset+=Math.floor(data.leftsize/2); 
+			}
+			break;
+	}
+	return 0; 
+
+};
+
+function onError(error){
+	console.log("navigator.getUserMedia error: ", error);
+}
+
+var audioSelect = document.querySelector('select#audioSource');
+var videoSelect = document.querySelector('select#videoSource');
+
+function gotSources(sourceInfos) {
+	for (var i = 0; i !== sourceInfos.length; ++i) {
+		var sourceInfo = sourceInfos[i];
+		var option = document.createElement('option');
+		option.value = sourceInfo.id;
+		if (sourceInfo.kind === 'audio') {
+			option.text = sourceInfo.label || 'microphone ' + (audioSelect.length + 1);
+			audioSelect.appendChild(option);
+		} else if (sourceInfo.kind === 'video') {
+			option.text = sourceInfo.label || 'camera ' + (videoSelect.length + 1);
+			videoSelect.appendChild(option);
+		} else {
+			console.log('Some other kind of source: ', sourceInfo);
+		}
+	}
+}
+
+if (typeof MediaStreamTrack === 'undefined'){
+	alert('This browser does not support MediaStreamTrack.\n\nTry Chrome Canary.');
+} else {
+	MediaStreamTrack.getSources(gotSources);
+}
+
+function startConfCall(){
+	var audioSource = audioSelect.value;
+	var videoSource = videoSelect.value;
+	if(videoStream!==null){
+		video.src=null; 
+		videoStream.stop();
+	}
+	if(renderTimer) clearTimeout(renderTimer);
+	if(keepAliveTimer) clearTimeout(keepAliveTimer);
+	//if(recorder !== null) recorder.onaudioprocess = recorderProcess;
+	//navigator.getUserMedia({audio:{optional: [{sourceId: audioSource}]}}, initializeRecorderAudio, onError);
+	navigator.getUserMedia({video:{optional: [{sourceId: videoSource}]}}, initializeRecorderVideo, onError);
+}
+
+audioSelect.onchange = startConfCall;
+videoSelect.onchange = startConfCall;
+
+startConfCall();
+/*
+navigator.getUserMedia({audio:true}, initializeRecorderAudio, onError);
+navigator.getUserMedia({video:true}, initializeRecorderVideo, onError);
+*/
+
+</script>
+</body>
+</html>

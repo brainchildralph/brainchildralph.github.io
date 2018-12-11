@@ -1,9 +1,11 @@
 ---
 layout: page
-title: Category
+title: Post by category
 description: All post entries ordered by categories.
 ---
 
+<h1>Categories</h1>
+<hr>
     {% assign tags = site.categories | sort %}
     {% assign sorted_posts = site.posts | sort: 'title' %}
 

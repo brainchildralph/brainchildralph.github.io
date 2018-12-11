@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link href="css/bootstrap.css" rel="stylesheet">
+<link href="css/carousel.css" rel="stylesheet">
+<script src="js/react-with-addons.js"></script>
+<script src="js/browser.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.js"></script>
+<script language="javascript" type="text/javascript" src="js/bootstrap.js"></script>
+<link rel="stylesheet" href="styles/mrcube.css" type="text/css"/>
+<script>
+	function getScrollOffsets(w) {
+		w = w || window;
+		if (w.pageXOffset != null) return { x: w.pageXOffset, y: w.pageYOffset };
+		var d = w.document;
+		if (document.compatMode == "CSS1Compat") return { x: d.documentElement.scrollLeft, y: d.documentElement.scrollTop };
+		return { x: d.body.scrollLeft, y: d.body.scrollTop };
+	}
+	var alpha = 0;
+	var beta = 0;
+	var gamma = 0;
+	var startalpha = 0;
+	var startbeta = 0;
+	var startgamma = 0;
+	var nowalpha = 0;
+	var nowbeta = 0;
+	var nowgamma = 0;
+	var initorientation=0;
+	var delay = 100;
+	var gsensorintvid; 
+
+/*
+	if (window.DeviceMotionEvent==undefined) {
+	} else {
+		window.ondeviceorientation = function(event) {
+			alpha = Math.round(event.alpha);
+			beta = Math.round(event.beta);
+			gamma = Math.round(event.gamma);
+			if(initorientation==0){
+				initorientation=1; 
+				startalpha=alpha; 
+				startbeta=beta; 
+				startgamma=gamma; 
+				nowalpha=startalpha; 
+				nowbeta=startbeta; 
+				nowgamma=startgamma; 
+			}
+		}				
+		
+		function rotateView(){
+			var factor=5; 
+			var delta=((alpha-nowalpha)/factor); 
+			if(delta==0){
+			}else{
+				nowalpha+=delta; 
+			}
+			$("#cube").css("-webkit-transform", "rotate3d(0, 1, 0, "+Math.round(nowalpha-startalpha)%360+"deg)");
+			$("#cube").css("-moz-transform", "rotate3d(0, 1, 0, "+Math.round(nowalpha-startalpha)%360+"deg)");
+			$("#cube").css("transform", "rotate3d(0, 1, 0, "+Math.round(nowalpha-startalpha)%360+"deg)");
+		}
+		gsensorintvid=setInterval(function() {
+			if(Math.abs(nowalpha-alpha)>5){
+				//setTimeout("rotateView();", 100);
+				$("#cube").css("-webkit-transform", "rotate3d(0, 1, 0, "+Math.round(alpha-startalpha)%360+"deg)");
+				$("#cube").css("-moz-transform", "rotate3d(0, 1, 0, "+Math.round(alpha-startalpha)%360+"deg)");
+				$("#cube").css("transform", "rotate3d(0, 1, 0, "+Math.round(alpha-startalpha)%360+"deg)");
+				nowalpha=alpha; 
+			}
+		}, delay);
+	} 
+*/
+	var polygondata=[ 
+		{"transfomr3d":"translate3d(0, 0, -300px)", "imgsrc":"images/BACK.png", "imgready":0}, 
+		{"transfomr3d":"translate3d(300px, 0, 0) rotate3d(0, 1, 0, -90deg)", "imgsrc":"images/RIGHT.png", "imgready":0}, 
+		{"transfomr3d":"translate3d(0, 0, 300px) rotate3d(0, 1, 0, 180deg)", "imgsrc":"images/FRONT.png", "imgready":0}, 
+		{"transfomr3d":"translate3d(-300px, 0, 0) rotate3d(0, 1, 0, 90deg)", "imgsrc":"images/LEFT.png", "imgready":0}, 
+		{"transfomr3d":"translate3d(0, -300px, 0) rotate3d(1, 0, 0, -90deg) rotate3d(0, 0, 1, 90deg)", "imgsrc":"images/UP.png", "imgready":0}, 
+		{"transfomr3d":"translate3d(0, 300px, 0) rotate3d(1, 0, 0, 90deg) rotate3d(0, 0, 1, -90deg)", "imgsrc":"images/DOWN.png", "imgready":0} 
+	];
+	function css3dinit(){
+		for(var i=0; i<6; i++){
+			$("<img>")
+				.attr({"src":polygondata[i].imgsrc, "imgready":0})
+				.addClass("polygon-face"+" polygon-"+i)
+				.appendTo("#cube");
+			polygondata[i].imgready=0; 
+			$(".polygon-"+i).load(function(){
+				console.log($(this).attr("src"));
+				$(this).attr("imgready", 1);
+			});
+		}
+		$(".polygon-face").css({ 
+			"display":"block", 
+			"position":"absolute", 
+			"width":"600px", 
+			"height":"600px", 
+			"left":"-300px", 
+			"top":"-200px", 
+			"-webkit-backface-visibility":"hidden",
+			"-moz-backface-visibility":"hidden",
+			"backface-visibility":"hidden"
+		});
+		for(var i=0; i<6; i++){
+			$(".polygon-"+i).css("-webkit-transform", polygondata[i].transfomr3d);
+			$(".polygon-"+i).css("-moz-transform", polygondata[i].transfomr3d);
+			$(".polygon-"+i).css("transform", polygondata[i].transfomr3d);
+		}
+	}
+
+	var rotateY=0, nowRotateY=0; 
+	$(document).ready(function(){
+		css3dinit();
+		$('#cube > img').on('dragstart', function(event) { event.preventDefault(); });
+		$("#cube").click(function(){
+			console.log("click!!");
+		}); 
+		// revert the touch event to mousedown event for mobile
+		var mouseEventTypes = {
+			touchstart: "mousedown",
+			touchmove: "mousemove",
+			touchend: "mouseup"
+		};
+
+		for (var originalType in mouseEventTypes) {
+			document.addEventListener(originalType, function (originalEvent) {
+				event = document.createEvent("MouseEvents");
+				touch = originalEvent.changedTouches[0];
+				event.initMouseEvent(mouseEventTypes[originalEvent.type], true, true, window, 0, touch.screenX, touch.screenY, touch.clientX, touch.clientY, touch.ctrlKey, touch.altKey, touch.shiftKey, touch.metaKey, 0, null);
+				originalEvent.target.dispatchEvent(event);
+			});
+		}
+
+		$("#cube").mouseup(function(e){
+			console.log("mouse up!!");
+			document.ontouchmove = function (e) {
+				return true;
+			};
+		});
+		$("#cube").mousedown(function(e){
+			console.log("mouse down!!");
+			window.ondeviceorientation = null;
+			window.clearInterval(gsensorintvid);
+			document.ontouchmove = function (e) {
+				e.preventDefault();
+			};
+			//$("#cube > img").css("pointer-events", "none");
+			if (!e) e = window.event;
+			var scroll = getScrollOffsets();
+			var startX = e.clientX + scroll.x;
+			var startY = e.clientY + scroll.y;
+			console.log(startX+","+startY);
+			if (document.addEventListener) {
+				document.addEventListener("mousemove", moveHandler, true);
+				document.addEventListener("mouseup", upHandler, true);
+			}else if (document.attachEvent) {
+				$("#cube").setCapture();
+				$("#cube").attachEvent("onmousemove", moveHandler);
+				$("#cube").attachEvent("onmouseup", upHandler);
+				$("#cube").attachEvent("onlosecapture", upHandler);
+			}
+			function moveHandler(e) {
+				if (!e) e = window.event;
+				var nowScroll = getScrollOffsets();
+                var nowStartX = e.clientX + nowScroll.x;
+                var nowStartY = e.clientY + nowScroll.y;
+				console.log(nowStartX-startX);
+				nowRotateY=(rotateY+((nowStartX-startX)/6))%360; 
+				$("#cube").css("-webkit-transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+				$("#cube").css("-moz-transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+				$("#cube").css("transform", "rotate3d(0, 1, 0, "+nowRotateY+"deg)");
+			}
+			function upHandler(e){
+				console.log("upHandler!!");
+				rotateY=nowRotateY; 
+				if (!e) e = window.event;
+				//$("#cube > img").css("pointer-events", "auto");
+				if (document.removeEventListener) {
+					document.removeEventListener("mouseup", upHandler, true);
+					document.removeEventListener("mousemove", moveHandler, true);
+				} else if (document.detachEvnet) {
+					$("#cube").detachEvent("onlosecapture", upHandler);
+					$("#cube").detachEvent("onmouseup", upHandler);
+					$("#cube").detachEvent("onmousemove", moveHandler);
+				}
+			}
+		});
+		$("#container-3d").show();
+		setTimeout(xxx=function(){
+		}, 100);
+	}); 
+</script>
+</head>
+<body>
+
+<div class="container">
+<div class="row">
+<div class="col-xs-12">
+
+<!-- Controls positioning on page and sets the perspective factor -->
+<div id="container-3d"> 
+	<!-- Positions the cube in space -->
+	<div id="position-3d">
+		<!-- Controls relative position of cube (centered around local origin) --> 
+		<div id="cube">
+			<!-- Each side of the cuve is rotated to face inwards. See stylesheet.  -->
+		</div>
+	</div>
+</div>
+
+</div>
+</div>
+</div>
+
+</body>
+</html>
