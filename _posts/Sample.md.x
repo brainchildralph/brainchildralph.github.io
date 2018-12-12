@@ -2,12 +2,12 @@
 layout: post
 title: "Title"
 description: "Description"
-date: 2018-08-02 14:07:00+0800
-date_modified: 2018-08-02 14:07:00+0800
-categories: ["xxx"]
+date: 2018-12-11 18:00:00+0800
+date_modified: 2018-12-11 18:00:00+0800
+categories: ["rs232"]
 tags:
-  - "xxx"
-author: kisaku
+  - "rs232"
+author: brainchildralph
 image:
 comments: true
 ---
