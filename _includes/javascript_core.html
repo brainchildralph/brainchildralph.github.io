@@ -8,3 +8,103 @@
 <!-- Bootstrap -->
 <script src="{{ "/js/bootstrap/bootstrap.min.js " | prepend: site.baseurl }}"></script>
 
+{% if page.passphrase.enabled == true %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/3.1.9-1/crypto-js.js"></script>
+{% if page.passphrase.type == 'new' %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.0/jquery-confirm.min.js"></script>
+<script>
+  var failed=0;
+  var pwdConfirm={
+    title: '請輸入密碼!!',
+    content: '' +
+    '<form action="" class="formName">' +
+    '<div class="form-group">' +
+    '<label></label>' +
+    '<input type="text" style="-webkit-text-security: disc;" placeholder="Your password" class="password form-control" required />' +
+    '</div>' +
+    '</form>',
+    buttons: {
+      formSubmit: {
+        text: '確認',
+        btnClass: 'btn-blue',
+        action: function () {
+          var password = this.$content.find('.password').val();
+          if(!password){
+            $.alert('provide a valid password');
+            return false;
+          }
+          try{
+            decrypted=CryptoJS.AES.decrypt("{{ page.passphrase.encrypted }}", password).toString(CryptoJS.enc.Utf8)
+          }catch(e){
+            decrypted="";
+          }
+          if(decrypted!="{{ page.passphrase.decrypted }}"){
+//          if(password!=='ooxx'){
+            failed++;
+            if(failed<3){
+              $.alert("錯誤"+failed+"次，"+"請再輸入一次密碼!!");
+              this.$content.find('.password').val('');
+              return false;
+            }
+            if(failed==3){
+              $.alert("錯誤"+failed+"次，"+"謝謝再連絡!!");
+              location.href="/"; 
+            }
+	  }else{
+            $("body > .container").show();
+	  } 
+        }
+      },
+      cancel: function () {
+        //close
+        location.href="/";
+      },
+    },
+    onContentReady: function () {
+      $("body > .container").hide(0);
+      //$(".jc-bs3-container").show();
+      // bind to events
+      var jc = this;
+      this.$content.find('form').on('submit', function (e) {
+        // if the user submits the form by pressing enter in the field.
+        e.preventDefault();
+        jc.$$formSubmit.trigger('click'); // reference the button and click it
+      });
+    }
+  };
+  $.confirm(pwdConfirm);
+</script>
+{% else %}
+<script>
+// echo "message" | openssl enc -aes-256-cbc -a -pass pass:$password
+// echo "encmessage" | openssl enc -aes-256-cbc -a -d -pass pass:$password
+var decrypted;
+var failed=0; 
+var password; 
+while(1){
+  password=(prompt("請輸入密碼",""));
+  try{
+    decrypted=CryptoJS.AES.decrypt("{{ page.passphrase.encrypted }}", password).toString(CryptoJS.enc.Utf8)
+  }catch(e){
+    decrypted="";
+  }
+  //confirm("decrypted: "+decrypted);
+  if(decrypted=="{{ page.passphrase.decrypted }}"){
+    break;
+  }else{
+    failed++; 
+    if(failed<3)
+      confirm("錯誤"+failed+"次，"+"請再輸入一次密碼!!");
+    if(failed==3){
+      confirm("錯誤"+failed+"次，"+"謝謝再連絡!!");
+      location.href="/"; 
+      break;
+    }
+  }
+}
+</script>
+<!--
+-->
+{% endif %}
+{% endif %}
