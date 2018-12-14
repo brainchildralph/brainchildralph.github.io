@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "CryptJS Notes"
-description: "Description"
+description: "CryptJS AES Usage"
 date: 2018-12-13 15:00:00+0800
 date_modified: 2018-12-13 15:00:00+0800
 categories: ["javascript","aes"]

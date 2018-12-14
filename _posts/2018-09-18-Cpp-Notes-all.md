@@ -3,9 +3,11 @@ layout: post
 title: "C++ - Int Class 範例"
 description: "重新定義 int 成新的類別 Int ，以及 operator 的操作。"
 date: 2018-09-18 18:00:00+0800
+date_modified: 2018-12-14 17:00:00+0800
 categories: [cpp]
 tags:
   - cpp
+  - "operator overloading"
 author: kisaku
 image:
 comments: true
