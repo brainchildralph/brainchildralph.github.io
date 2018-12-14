@@ -12,7 +12,7 @@ author: brainchildralph
 image:
 comments: true
 passphrase: 
-  enabled: true
+  enabled: false
   password: "ooxx"
   encrypted: "U2FsdGVkX1+lO64bWx9P2yWXy7yjynbF4/6gc/0/OIE="
   decrypted: "Passw0rd!"
