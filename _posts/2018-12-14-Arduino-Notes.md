@@ -30,4 +30,9 @@ comments: true
 使用`F()`將字串存在Flash上面。    
 ```
 Serial.print(F(“Hello World”));
-```    
+```
+**Ctags Recognizes .ino for C++ Format**     
+```
+ctags -R --langmap=C++:+.ino --verbose `pwd`
+```
+
