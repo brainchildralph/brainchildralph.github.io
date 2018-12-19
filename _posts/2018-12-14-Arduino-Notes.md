@@ -9,11 +9,24 @@ tags:
   - "arduino"
 author: brainchildralph
 image:
+  path: "https://upload.wikimedia.org/wikipedia/commons/c/c9/Pinout_of_ARDUINO_Board_and_ATMega328PU.svg"
+  width: 1280
+  height: 777
 comments: true
 ---
+### **摘要**    
+- **[Spec.](#spec)**    
+- **[Pinout](#pinout)**    
+- **[Firmware](#firmware)**    
 
-#### **Arduino UNO Pinout**    
+#### **Spec.**    
+------    
+**Datasheet**
+- [UNO](/docs/arduino/ATMega328.pdf)    
+- [CPU - ATMega328](/docs/arduino/arduino_uno_datasheet.pdf)    
 
+#### **Pinout**    
+------    
 {% include lightbox.html src="https://upload.wikimedia.org/wikipedia/commons/c/c9/Pinout_of_ARDUINO_Board_and_ATMega328PU.svg" title="Pinout of ARDUINO Board and ATMega328PU" width="500" %}    
 <div markdown="1">  
 <center>
@@ -24,7 +37,10 @@ comments: true
 </center>
 </div>
 
-**[Language Reference](https://www.arduino.cc/reference/en/#functions)**
+#### **Firmware**    
+------    
+**Language Reference**    
+- [Functions, Variables, Structure](https://www.arduino.cc/reference/en/#functions)    
 
 **flash-memory based strings**    
 使用`F()`將字串存在Flash上面。    
