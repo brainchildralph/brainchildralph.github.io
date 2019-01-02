@@ -17,10 +17,14 @@ comments: true
 
 ------    
 
-<div class="mermaid">
-  graph LR
-    Start --> Stop
-</div>
+
+{% mermaid %}
+graph LR
+A[Square Rect] -- Link text --> B((Circle))
+A --> C(Round Rect)
+B --> D{Rhombus}
+C --> D
+{% endmermaid %}
 <!--stackedit_data:
-eyJoaXN0b3J5IjpbLTM3MTU3NDEwNF19
+eyJoaXN0b3J5IjpbLTU4NTk1MDU3N119
 -->
