@@ -53,4 +53,19 @@ layout: default
 </center>
 <div>
   {% include disqus.html %}
+  {% if page.mermaid == true %}
+  <script src="/js/mermaid/8.0.0/mermaid.min.js"></script>
+  <script>
+  var config = {
+    startOnLoad:true,
+    theme: 'forest',
+    flowchart:{
+      useMaxWidth:false,
+      htmlLabels:true
+    }
+  };
+  mermaid.initialize(config);
+  mermaid.init(undefined, document.querySelectorAll('.language-mermaid'));
+  </script>
+  {% endif %}
 </div>

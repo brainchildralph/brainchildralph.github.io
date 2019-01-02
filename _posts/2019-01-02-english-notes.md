@@ -11,6 +11,7 @@ tags:
 author: brainchildralph
 image:
 comments: true
+mermaid: true
 ---
 
 ### **摘要**
@@ -18,13 +19,10 @@ comments: true
 ------    
 
 
-{% mermaid %}
+```mermaid
 graph LR
 A[Square Rect] -- Link text --> B((Circle))
 A --> C(Round Rect)
 B --> D{Rhombus}
 C --> D
-{% endmermaid %}
-<!--stackedit_data:
-eyJoaXN0b3J5IjpbLTU4NTk1MDU3N119
--->
+```
