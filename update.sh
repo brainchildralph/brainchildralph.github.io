@@ -1,2 +1,3 @@
 #!/bin/bash
-git add .; git commit . -m "update"; git push origin master
+[ -z "$1" ] && git add .; git commit . -m "update"; git push origin master
+[ -n "$1" ] && git add .; git commit . -m "$1"; git push origin master
