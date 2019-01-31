@@ -18,14 +18,51 @@ mermaid: true
 
 ------    
 
+#### Build Tips
+
+For Busybox configurations. 
+```
+make busybox_menuconfig
+```
+For Linux kernel configurations. 
+```
+make linux_menuconfig
+```
+For mkfs.ext2/3/4, please select `e2fsprogs`. 
+
+
+
+#### CGROUPS for Docker
+
 For buildroot, you have to create cgroups by manaul, there is a sample scripts for it. 
 
 ```shell
+mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
+cd /sys/fs/cgroup
 for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do 
   mkdir -p  $sys; 
   mount -n -t cgroup -o $sys cgroup $sys; 
 done
 ```
+#### SSH Server Config
+
+/etc/ssh/sshd_config
+```
+PermitRootLogin yes
+PasswordAuthentication yes
+PermitEmptyPasswords yes
+```
+Remember to restart sshd...
+```
+/etc/init.d/S50sshd restart
+```
+You can set root password empty, because of above configuation.   
+
+```
+touch pwd
+passwd root < ./pwd
+```
+
 
 #### Buildroot testing iso image
 
@@ -35,7 +72,7 @@ You have to follow the steps as below to enable configuration to build iso file.
  - Enable BR2_TARGET_ROOTFS_ISO9660
 
 
-#### docker login problem
+#### Docker login problem (Solved)
 
 Problem: when docker login, I met as below...
 
@@ -52,6 +89,7 @@ INFO[2019-01-29T06:57:41.245019014Z] Error logging in to v2 endpoint, trying nex
 ERRO[2019-01-29T06:57:41.247284107Z] Handler for POST /v1.39/auth returned error: Get https://registry-1.docker.io/v2/: x509: certificate signed by unknown authority 
 Error response from daemon: Get https://registry-1.docker.io/v2/: x509: certificate signed by unknown authority
 ```
+After `ca-certificates` installed, this problem can't be resolved. 
 
 ```
 openssl genrsa -out client.key 4096
