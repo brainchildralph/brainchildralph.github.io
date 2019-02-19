@@ -143,7 +143,10 @@ esac
 </div>{:class='collapse' id='dockerd-init-block' style='margin-left: 2em;'}
 
 
-#### SSH Server Config
+#### **SSH Server Config >**
+{:data-toggle="collapse" href="#ssh-config-block"}
+
+<div markdown="1">
 
 /etc/ssh/sshd_config
 ```
@@ -161,15 +164,19 @@ You can set root password empty, because of above configuation.
 touch pwd
 passwd root < ./pwd
 ```
+</div>{:class='collapse' id='ssh-config-block' style='margin-left: 2em;'}
 
+#### **Buildroot testing iso image >**
+{:data-toggle="collapse" href="#iso-block"}
 
-#### Buildroot testing iso image
+<div markdown="1">
 
 You have to follow the steps as below to enable configuration to build iso file. Then, you can use it to test Virtualbox. 
 
  - Enable BR2_TARGET_SYSLINUX
  - Enable BR2_TARGET_ROOTFS_ISO9660
 
+</div>{:class='collapse' id='iso-block' style='margin-left: 2em;'}
 
 #### Docker login problem (Solved)
 
