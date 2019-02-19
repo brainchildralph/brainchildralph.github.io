@@ -84,6 +84,11 @@ comments: true
 
 <div markdown="1">
 
+Run `npm init` to initial a testing package. 
+Then, run `npm install --save-dev ionic` to install ionic into local package. 
+
+Because you install `ionic` into local package, so you need to add `ionic` command into `"scripts"` on `package.json`. 
+
 **[package.json](javascript:void(0))**
 {:data-toggle="collapse" href="#packagejson-block"}
 <div markdown="1">
@@ -105,6 +110,9 @@ comments: true
 } 
 ```
 </div>{:class='collapse' id='packagejson-block' style='margin-left: 2em;'}
+
+Create `ionic.sh` to use ionic in package. 
+
 **[ionic.sh](javascript:void(0))**
 {:data-toggle="collapse" href="#ionicsh-block"}
 <div markdown="1">
@@ -114,6 +122,50 @@ comments: true
 npm run ionic -- ${@:1}
 ```
 </div>{:class='collapse' id='ionicsh-block' style='margin-left: 2em;'}
+
+Get the ionic usage command. 
+
+```
+./ionic.sh --help
+```
+
+Ionic usage: 
+
+```
+  Global Commands:
+
+    config <subcommand> ............. Manage CLI and project config values 
+                                      (subcommands: get, set, unset)
+    docs ............................ Open the Ionic documentation website
+    info ............................ Print project, system, and environment 
+                                      information
+    init ............................ (beta) Initialize existing projects with 
+                                      Ionic
+    login ........................... Login to Ionic Appflow
+    logout .......................... Logout of Ionic Appflow
+    signup .......................... Create an account for Ionic Appflow
+    ssh <subcommand> ................ Commands for configuring SSH keys 
+                                      (subcommands: add, delete, generate, list, 
+                                      setup, use)
+    start ........................... Create a new project
+```
+
+Create a blank project by runnig `./ionic.sh start myApp blank --type=ionic1 ` command, and you will get `myApp` folder.  
+
+Add the same code into 'package.json' as below in `myApp` ionic package. 
+
+```
+  "scripts": {
+    "ionic": "ionic",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+```
+
+Then, you can run ionic command by `ionic.sh` to generate Android APP. 
+
+```
+```
+
 
 </div>{:class='collapse' id='nodejs-block' style='margin-left: 2em;'}
 

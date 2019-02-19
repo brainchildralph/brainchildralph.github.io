@@ -41,6 +41,11 @@ mermaid: true
   ```
 + For mkfs.ext2/3/4, please select `e2fsprogs`. 
 
++ Environment: 
+    - TOPDIR: buildroot source directory. ex: $(TOPDIR) in `.config`. 
+    - HOME: User's home directory. ex: Chage BR2_DL_DIR to BR2_DL_DIR="$(HOME)/dl" in `.config`. 
+    - BASE_DIR: Output folder, and it is `output` folder in buildroot source code. 
+
 </div>{:class='collapse' id='build-tips-block' style='margin-left: 0em;'}
 
 #### **CGROUPS for Docker >**
