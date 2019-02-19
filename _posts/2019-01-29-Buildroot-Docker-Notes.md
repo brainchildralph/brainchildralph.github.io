@@ -3,7 +3,7 @@ layout: post
 title: "Buildroot Docker Notes"
 description: ""
 date: 2019-01-29 15:00:00+0800
-date_modified: 2019-01-29 15:00:00+0800
+date_modified: 2019-02-19 10:00:00+0800
 categories: ["docker","buildroot"]
 tags:
   - "docker"
@@ -60,7 +60,7 @@ done
 </div>{:class='collapse' id='cgroups-block' style='margin-left: 2em;'}
 
 #### Dockerd initial script
-{:data-toggle="collapse" href="#dockd-init-block"}
+{:data-toggle="collapse" href="#dockerd-init-block"}
 
 <div markdown="1">
 
