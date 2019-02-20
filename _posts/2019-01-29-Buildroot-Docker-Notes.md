@@ -31,6 +31,11 @@ mermaid: true
 
 <div markdown="1">
 
++ Before compile buildroot. 
+  ```
+  apt-get install -y libncurses-dev cpio bc libssl-dev syslinux extlinux
+  apt-get install -y virtualbox
+  ```
 + For Busybox configurations.     
   ```
   make busybox_menuconfig
@@ -42,9 +47,17 @@ mermaid: true
 + For mkfs.ext2/3/4, please select `e2fsprogs`. 
 
 + Environment: 
-    - TOPDIR: buildroot source directory. ex: $(TOPDIR) in `.config`. 
-    - HOME: User's home directory. ex: Chage BR2_DL_DIR to BR2_DL_DIR="$(HOME)/dl" in `.config`. 
-    - BASE_DIR: Output folder, and it is `output` folder in buildroot source code. 
+  - TOPDIR: buildroot source directory. ex: $(TOPDIR) in `.config`. 
+  - HOME: User's home directory. ex: Chage BR2_DL_DIR to BR2_DL_DIR="$(HOME)/dl" in `.config`. 
+  - BASE_DIR: Output folder, and it is `output` folder in buildroot source code.
+
++ How to generate vdi file from image?
+  - 
+  ```
+  $ VBoxManage convertfromraw ${hddImg} ${hddVdi} --format VDI --uuid ${hddUUID}
+  ```
+  - If you want to fix the uuid, add the parameter `--uuid`. This will speed up developing. 
+
 
 </div>{:class='collapse' id='build-tips-block' style='margin-left: 0em;'}
 
@@ -52,101 +65,98 @@ mermaid: true
 {:data-toggle="collapse" href="#cgroups-block"}
 
 <div markdown="1">
-
-For buildroot, you have to create cgroups by manaul, there is a sample scripts for it. 
-
-```shell
-mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
-cd /sys/fs/cgroup
-for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do 
-  mkdir -p  $sys; 
-  mount -n -t cgroup -o $sys cgroup $sys; 
-done
-```
-</div>{:class='collapse' id='cgroups-block' style='margin-left: 2em;'}
++ For buildroot, you have to create cgroups by manaul, 
+  there is a sample scripts for it. 
+  ```shell
+  mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
+  cd /sys/fs/cgroup
+  for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do 
+    mkdir -p  $sys; 
+    mount -n -t cgroup -o $sys cgroup $sys; 
+  done
+  ```
+</div>{:class='collapse' id='cgroups-block' style='margin-left: 0em;'}
 
 #### **Dockerd initial script >**
 {:data-toggle="collapse" href="#dockerd-init-block"}
 
 <div markdown="1">
 
-```
-#!/bin/sh
++ Dockerd initial script 
+  ```
+  #!/bin/sh
 
-DAEMON="dockerd"
-PIDFILE="/var/run/docker.pid"
+  DAEMON="dockerd"
+  PIDFILE="/var/run/docker.pid"
+  
+  DOCKERD_ARGS="-s overlay2"
+  
+  # shellcheck source=/dev/null
+  [ -r "/etc/default/$DAEMON" ] && . "/etc/default/$DAEMON"
+  
+  
+  cgroupfs_mount() {
+          if ! `mountpoint -q /sys/fs/cgroup`; then
+                  mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
+          fi
+          cd /sys/fs/cgroup
+          for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do
+                  mkdir -p  $sys;
+                  if ! `mountpoint -q $sys`; then
+                          mount -n -t cgroup -o $sys cgroup $sys;
+                  fi
+          done
+  }
+  
+  start() {
+          printf 'Starting %s: ' "$DAEMON"
+          cgroupfs_mount
+          start-stop-daemon -b -S -q -x "/usr/bin/$DAEMON" \
+                  -- $DOCKERD_ARGS
+          status=$?
+          if [ "$status" -eq 0 ]; then
+                  echo "OK"
+          else
+                  echo "FAIL"
+          fi
+          return "$status"
+  }
+  
+  stop() {
+          printf 'Stopping %s: ' "$DAEMON"
+          start-stop-daemon -K -q -p "$PIDFILE"
+          status=$?
+          if [ "$status" -eq 0 ]; then
+                  rm -f "$PIDFILE"
+                  echo "OK"
+          else
+                  echo "FAIL"
+          fi
+          return "$status"
+  }
+  
+  restart() {
+          stop
+          sleep 1
+          start
+  }
+  
+  case "$1" in
+          start|stop|restart)
+                  "$1";;
+          reload)
+                  # Restart, since there is no true "reload" feature.
+                  restart;;
+          *)
+                  echo "Usage: $0 {start|stop|restart|reload}"
+                  exit 1
+  esac    
+  
+  ```
 
-DOCKERD_ARGS="-s overlay2"
-
-# shellcheck source=/dev/null
-[ -r "/etc/default/$DAEMON" ] && . "/etc/default/$DAEMON"
-
-
-cgroupfs_mount() {
-        if ! `mountpoint -q /sys/fs/cgroup`; then
-                mount -t tmpfs -o uid=0,gid=0,mode=0755 cgroup /sys/fs/cgroup
-        fi
-        cd /sys/fs/cgroup
-        for sys in $(awk '!/^#/ { if ($4 == 1) print $1 }' /proc/cgroups); do
-                mkdir -p  $sys;
-                if ! `mountpoint -q $sys`; then
-                        mount -n -t cgroup -o $sys cgroup $sys;
-                fi
-        done
-}
-
-start() {
-        printf 'Starting %s: ' "$DAEMON"
-        cgroupfs_mount
-        start-stop-daemon -b -S -q -x "/usr/bin/$DAEMON" \
-                -- $DOCKERD_ARGS
-        status=$?
-        if [ "$status" -eq 0 ]; then
-                echo "OK"
-        else
-                echo "FAIL"
-        fi
-        return "$status"
-}
-
-stop() {
-        printf 'Stopping %s: ' "$DAEMON"
-        start-stop-daemon -K -q -p "$PIDFILE"
-        status=$?
-        if [ "$status" -eq 0 ]; then
-                rm -f "$PIDFILE"
-                echo "OK"
-        else
-                echo "FAIL"
-        fi
-        return "$status"
-}
-
-restart() {
-        stop
-        sleep 1
-        start
-}
-
-case "$1" in
-        start|stop|restart)
-                "$1";;
-        reload)
-                # Restart, since there is no true "reload" feature.
-                restart;;
-        *)
-                echo "Usage: $0 {start|stop|restart|reload}"
-                exit 1
-esac    
-
-```
-
-*   **How to check if `/sys/fs/cgroup` mounted?**    
-
-    A: To use command `mountpoint -q /sys/fs/cgroup`, and get return value. 
-
-</div>{:class='collapse' id='dockerd-init-block' style='margin-left: 2em;'}
-
+  **How to check if `/sys/fs/cgroup` mounted?**    
+  A: To use command `mountpoint -q /sys/fs/cgroup`, and get return value. 
+</div>{:class='collapse' id='dockerd-init-block' style='margin-left: 0em;'}
 
 #### **SSH Server Config >**
 {:data-toggle="collapse" href="#ssh-config-block"}
@@ -228,10 +238,56 @@ $ docker images
 REPOSITORY                           TAG                   IMAGE ID            CREATED             VIRTUAL SIZE
 openwrt-x86-generic-rootfs           latest                2cebd16f086c        6 minutes ago       5.283 MB
 ```
-Run docker images. 
+Run shell for docker image, and mapping `/tmp/test` folder for some usage. 
 ```
-$ docker run --name test --rm -it openwrt-x86-generic-rootfs /bin/ash
+$ docker run --name test --rm -v /tmp/test:/tmp/test -it openwrt-x86-generic-rootfs /bin/ash
+```
+After enter OpenWRT shell, you can modify `inittab` and some config files. 
+
+**inittab:** 
+```
+::sysinit:/etc/init.d/rcS S boot
+::shutdown:/etc/init.d/rcS K shutdown
+# Add for console. 
+console::askfirst:/bin/ash --login
+# Mark below lines. 
+#ttyS0::askfirst:/bin/ash --login
+#tty1::askfirst:/bin/ash --logi
 ```
 
+Change the uhttpd listen ports to 8080 and 8443. 
+
+**/etc/config/uhttpd:**
+```
+config uhttpd 'main'
+        option home '/www'
+        option rfc1918_filter '1'
+        option max_requests '3'
+        option cert '/etc/uhttpd.crt'
+        option key '/etc/uhttpd.key'
+        option cgi_prefix '/cgi-bin'
+        option script_timeout '60'
+        option network_timeout '30'
+        option tcp_keepalive '1'
+        option listen_https '0.0.0.0:8443'
+        option listen_http '0.0.0.0:8080'
+...
+```
+Change the ssh listen port to 2222. 
+**/etc/config/dropbear:**
+```
+config dropbear
+        option PasswordAuth 'on'
+        option RootPasswordAuth 'on'
+        option Port '2222'
+```
+Then, copy `/etc` to `/tmp/test`. 
+```
+$ cp -a /etc /tmp/test
+```
+Finally, run whole service on OpenWRT. 
+```
+$ docker run --name test --rm -v /tmp/test/etc:/etc --privileged -it openwrt-x86-generic-rootfs /sbin/init
+```
 </div>{:class='collapse' id='openwrt-block' style='margin-left: 2em;'}
 
