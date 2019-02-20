@@ -53,10 +53,35 @@ mermaid: true
 
 + How to generate vdi file from image?
   - 
-  ```
-  $ VBoxManage convertfromraw ${hddImg} ${hddVdi} --format VDI --uuid ${hddUUID}
-  ```
-  - If you want to fix the uuid, add the parameter `--uuid`. This will speed up developing. 
+    ```
+    $ VBoxManage convertfromraw ${hddImg} ${hddVdi} \
+      --format VDI --uuid ${hddUUID}
+    ```
+  - If you want to fix the uuid, add the
+ parameter `--uuid`. This will speed up developing. 
+
++ ifup/ifdown script example:
+  - **/etc/network/interfaces**
+    ```
+    auto lo
+    iface lo inet loopback
+    
+    auto eth0
+    iface eth0 inet dhcp
+      udhcpc_opts -b
+    
+    auto eth1
+    iface eth1 inet static
+      address 192.168.111.55
+      netmask 255.255.255.0
+      broadcast 192.168.111.255
+    #  gateway 192.168.111.1
+    ```
+  - ifup/ifdown useful commands: 
+    ```
+    $ ifup -v eth0       # this will show what commands are executed.
+    ```
+
 
 
 </div>{:class='collapse' id='build-tips-block' style='margin-left: 0em;'}
