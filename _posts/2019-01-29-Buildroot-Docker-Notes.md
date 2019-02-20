@@ -183,7 +183,10 @@ You have to follow the steps as below to enable configuration to build iso file.
 
 </div>{:class='collapse' id='iso-block' style='margin-left: 2em;'}
 
-#### Docker login problem (Solved)
+#### **Docker login problem (Solved) >**
+{:data-toggle="collapse" href="#dockerlogin-problem-block"}
+
+<div markdown="1">
 
 Problem: when docker login, I met as below...
 
@@ -200,7 +203,7 @@ INFO[2019-01-29T06:57:41.245019014Z] Error logging in to v2 endpoint, trying nex
 ERRO[2019-01-29T06:57:41.247284107Z] Handler for POST /v1.39/auth returned error: Get https://registry-1.docker.io/v2/: x509: certificate signed by unknown authority 
 Error response from daemon: Get https://registry-1.docker.io/v2/: x509: certificate signed by unknown authority
 ```
-After `ca-certificates` installed, this problem can't be resolved. 
+After `ca-certificates` installed, this problem can be resolved. 
 
 ```
 openssl genrsa -out client.key 4096
@@ -211,5 +214,24 @@ openssl req -new -x509 -text -key client.key -out client.cert
 openssl req -newkey rsa:4096 -nodes -sha256 -keyout certs/domain.key -x509 -days 365 -out certs/domain.crt
 ```
 
+</div>{:class='collapse' id='dockerlogin-problem-block' style='margin-left: 2em;'}
 
+#### **OpenWRT Image Testing>**
+{:data-toggle="collapse" href="#openwrt-block"}
+
+<div markdown="1">
+
+Import openwrt x86 rootfs. 
+```
+$ docker import http://downloads.openwrt.org/attitude_adjustment/12.09/x86/generic/openwrt-x86-generic-rootfs.tar.gz openwrt-x86-generic-rootfs
+$ docker images
+REPOSITORY                           TAG                   IMAGE ID            CREATED             VIRTUAL SIZE
+openwrt-x86-generic-rootfs           latest                2cebd16f086c        6 minutes ago       5.283 MB
+```
+Run docker images. 
+```
+$ docker run --name test --rm -it openwrt-x86-generic-rootfs /bin/ash
+```
+
+</div>{:class='collapse' id='openwrt-block' style='margin-left: 2em;'}
 
