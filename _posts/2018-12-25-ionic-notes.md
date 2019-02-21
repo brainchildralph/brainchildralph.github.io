@@ -164,8 +164,9 @@ Add the same code into 'package.json' as below in `myApp` ionic package.
 Then, you can run ionic command by `ionic.sh` to generate Android APP. 
 
 ```
+$ ./ionic.sh cordova platform add android
+$ ./ionic.sh cordova build android
 ```
-
 
 </div>{:class='collapse' id='nodejs-block' style='margin-left: 2em;'}
 
