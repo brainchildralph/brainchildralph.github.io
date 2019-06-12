@@ -1,0 +1,4 @@
+/* Code tidied up by ScrapBook */
+.hljs { display: block; overflow-x: auto; padding: 0.5em; background: rgb(63, 63, 63) none repeat scroll 0% 0%; color: rgb(220, 220, 220); -moz-text-size-adjust: none; }
+.hljs-number, .hljs-date { color: rgb(140, 208, 211); }
+.diff .hljs-deletion, .hljs-string, .hljs-tag .hljs-value, .hljs-preprocessor, .hljs-pragma, .hljs-built_in, .hljs-javadoc, .smalltalk .hljs-class, .smalltalk .hljs-localvars, .smalltalk .hljs-array, .css .hljs-rule .hljs-value, .hljs-attr_selector, .hljs-pseudo, .apache .hljs-cbracket, .tex .hljs-formula, .coffeescript .hljs-attribute { color: rgb(204, 147, 147); }

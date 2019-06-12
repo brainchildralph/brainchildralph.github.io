@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<!-- Inserted by TRADOS: --><meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+<meta charset="UTF-8">
+<title>TI 15.4-Stack - Linux Gateway Project Zero</title>
+<link rel="stylesheet" href="ubuntu-regular-woff.css"><link rel="stylesheet" href="glyphicons-halflings-regular.css"><link rel="stylesheet" href="united2.min.css"><link rel="stylesheet" href="bootstrap-responsive.min.css"><link rel="stylesheet" href="strapdown.css"><link rel="shortcut icon" type="image/x-icon" href="favicon.ico"></head>
+
+<!-- START PRE -->
+
+
+
+
+
+
+<!-- END PRE -->
+
+<body style=""><div class="container"><nav class="navbar navbar-default navbar-static-top"><div class="container-fluid"> <div class="navbar-header">  <div id="headline" class="navbar-brand">TI 15.4-Stack - Linux Gateway Project Zero</div> </div> </div></nav><div class="container"><div class="row row-offcanvas row-offcanvas-left"><div class="col-xs-12 col-sm-9" id="content"><h1 class="body-heading" id="566a5lul">簡介<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#566a5lul"></a></h1><p>TI 15.4-Stack Linux SDK 示例應用程序可幫助開發人員創建超低功耗的超遠程星形拓撲網絡解決方案。TI 15.4-Stack Linux SDK 包括收集器和網關示例應用程序（還包括其他內容；有關更多詳細信息，請參閱 TI 15.4-Stack 嵌入式開發人員指南）。Linux 收集器示例應用程序通過 UART 與充當 MAC 協處理器 (CoP) 的 CC13x0 LaunchPad™ 建立連接。收集器示例應用實現了執行網絡 PAN 協調器（啟動網絡並允許設備加入該網絡）功能的全功能設備，並且還提供監視和收集一個或多個傳感器設備中傳感器數據的接口。此外，連接器網關示例應用程序還提供了一個連接 Linux 網關應用的套接字服務器接口。</p>
+<p>Linux 網關應用通過 NodeJs 框架實現，可作為客戶端連接到 Linux 收集器創建的套接字服務器。此應用隨後可建立本地 Web 服務器，用戶可通過 Web 瀏覽器連接到此服務器以監視和控制網絡設備。收集器和網關示例應用程序共同構成到 <strong>IP</strong> 橋的完整 <strong>IEEE 802.15.4</strong>，這是創建基於 TI 15.4-Stack 的物聯網 (IoT) 應用的良好開端。</p>
+<p>本實驗使用預生成的二進制文件，因此無需執行編碼和生成等操作。它提供有詳細的說明，可幫助開發人員樹立和理解該基於 Linux 收集器的星形網絡傳感器的工作演示所體現的原則。</p>
+<p><strong>任務 1</strong>：準備傳感器</p>
+<p><strong>任務 2</strong>：準備 MAC 協處理器</p>
+<p><strong>任務 3</strong>：安裝 TI 15.4-Stack Linux 網關 SDK</p>
+<p><strong>任務 4</strong>：準備主機</p>
+<p><strong>任務 5</strong>：運行和使用解決方案</p>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">技術支持
+</span></h4>
+<p>若存在任何疑問，請參閱相關的 E2E 論壇 - <a href="http://e2e.ti.com/support/wireless_connectivity/proprietary_sub_1_ghz_simpliciti/">TI 低於 1GHz E2E 論壇</a></p>
+</div>
+<h1 class="body-heading" id="5psv5oyb55qe6k6-5ashl1nesw-">支持的設備/SDK<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5psv5oyb55qe6k6-5ashl1nesw-"></a></h1><p>本實驗可與以下各個 IT 設備的最新 SDK 配合使用：</p>
+<table class="table table-striped table-bordered">
+<thead>
+<tr>
+<th style="text-align: center;">TI 器件</th>
+<th style="text-align: center;">SDK 版本</th>
+<th>運行模式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: center;">CC1310</td>
+<td style="text-align: center;"><a href="http://www.ti.com.cn/tool/cn/SIMPLELINK-CC13X0-SDK">CC13x0 SDK v1.60</a></td>
+<td>低於 1GHz TI 15.4-Stack</td>
+</tr>
+<tr>
+<td style="text-align: center;">CC1350</td>
+<td style="text-align: center;"><a href="http://www.ti.com.cn/tool/cn/SIMPLELINK-CC13X0-SDK">CC13x0 SDK v1.60</a></td>
+<td>低於 1GHz TI 15.4-Stack</td>
+</tr>
+<tr>
+<td style="text-align: center;">CC1312</td>
+<td style="text-align: center;"><a href="http://www.ti.com.cn/tool/cn/SIMPLELINK-CC13X2-SDK">CC13x2 SDK v1.60</a></td>
+<td>低於 1GHz TI 15.4-Stack</td>
+</tr>
+<tr>
+<td style="text-align: center;">CC1352</td>
+<td style="text-align: center;"><a href="http://www.ti.com.cn/tool/cn/SIMPLELINK-CC13X2-SDK">CC13x2 SDK v1.60</a></td>
+<td>低於 1GHz TI 15.4-Stack</td>
+</tr>
+</tbody>
+</table>
+<div class="bs-callout bs-callout-danger "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">注意
+</span></h4>
+<p>  此版本不支持 2.4GHz 運行/CC26x2</p>
+</div>
+<h1 class="body-heading" id="5ywi5yaz5p2h5lu2">先決條件<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5ywi5yaz5p2h5lu2"></a></h1><h2 class="body-heading" id="55-l6k-g6iom5pmv">知識背景<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#55-l6k-g6iom5pmv"></a></h2><p>執行本實驗需要具備基本的 Linux 知識。</p>
+<h2 class="body-heading" id="6l2v5lu2">軟件<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#6l2v5lu2"></a></h2><ul>
+<li><a href="http://www.ti.com.cn/tool/cn/UNIFLASH">UniFlash</a></li>
+<li>上面列表中的對應 SDK</li>
+<li><a href="http://www.ti.com.cn/tool/cn/ti-15.4-stack-gateway-linux-sdk">TI 15.4-Stack Linux 網關 SDK</a> 2.2.0 或更高版本（將在下面的任務 3 中進行設置）</li>
+<li><a href="http://software-dl.ti.com/processor-sdk-linux/esd/AM335X/latest/index_FDS.html">BeagleBone Black 的 PROCESSOR-SDK-LINUX-AM335X SD 卡映像 v. 03.02.00.05</a>（僅限於使用嵌入式主機 - 參閱下面的任務 4)</li>
+<li><a href="https://ttssh2.osdn.jp/index.html.en">Tera term</a> 或任何其他等效的終端程序</li>
+</ul>
+<h2 class="body-heading" id="56gs5lu2">硬件<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#56gs5lu2"></a></h2><ul>
+<li>2 塊兼容的 LaunchPad，請參閱 <strong>支持的設備/SDK</strong> 部分</li>
+<li>2 條 USB 線纜</li>
+<li>有線網絡訪問（即具有可用以太網連接的 Wi-Fi 路由器）</li>
+<li>以下主機平台之一：<ul>
+<li>嵌入式主機平台<ul>
+<li><a href="http://www.ti.com.cn/tool/cn/BEAGLEBK">BeagleBone Black</a> 修訂版 C（其他版本的 BBB 也可能兼容，但尚未進行測試）</li>
+<li>兼容的 5V 電源適配器</li>
+<li>以太網電纜</li>
+<li><a href="http://www.ftdichip.com/Products/Cables/USBTTLSerial.htm">TTL-232R-3V3</a> 通過 USB 連接 FTDI 出品的 TTL 系列電纜，亦稱為 FTDI 電纜（可選）
+<div class="modal-pop" style="cursor: zoom-in;"><img src="embedded_host.jpg" alt="Resource Explorer" class="img-responsive"></div></li>
+</ul>
+</li>
+<li>電腦主機平台<ul>
+<li>已連接到本地網絡且運行 ubuntu 的電腦或虛擬機
+<div class="modal-pop" style="cursor: zoom-in;"><img src="pc_host.jpg" alt="Resource Explorer" class="img-responsive"></div></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>運行 14.04 64 位 ubuntu 的電腦或虛擬機（必需，使用嵌入式主機時也是如此），用於從 Linux SDK 安裝程序提取預編譯的網關二進制文件（其他版本的 Linux 也可能兼容，但尚未進行測試）</li>
+<li>Windows 電腦，用於運行 SmartRF Flash Programmer 2 和安裝 SimpleLink CC13x0 SDK</li>
+</ul>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">兩個主機平台選項
+</span></h4>
+<p>TI 15.4-Stack Linux 網關與嵌入式主機 (BeagleBone Black) 和電腦主機（請參閱上文的硬件先決條件）開箱即可兼容。</p>
+<p>使用電腦主機可以提供更易於使用的開發和調試功能。如果已擁有可用的 ubuntu 電腦或虛擬機，它們還可以加速啟動過程，因為此時無需重新安裝主機環境。此外，儘管將 BeagleBone 用作主機可能需要執行額外步驟來對其進行設置，但它可提供更真實的環境並且與嵌入式目標產品更為接近。</p>
+</div>
+<div class="bs-callout bs-callout-warning "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">注意
+</span></h4>
+<p>可使用任何 CC13xx LaunchPad 執行本實驗。培訓資料以 CC1350 為例，因此，如果您使用的是 CC1310/CC1312/CC1350，文本和屏幕截圖中所有涉及 CC1350 的內容均應以您所使用的具體電路板型號為準。</p>
+</div>
+<h1 class="body-heading" id="5lu75yqhiddvvjrlr7kgtgf1bmnougfkioi-m-ihjoagh-iusa-">任務 0：對 LaunchPad 進行標記<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhiddvvjrlr7kgtgf1bmnougfkioi-m-ihjoagh-iusa-"></a></h1><p>1.根據 <a href="http://dev.ti.com/tirex/content/simplelink_academy_cc13x2sdk_chinese_1_15_05_02/modules/util_identify_lp/util_identify_lp.html">此處</a> 的介紹，用相應的 XDS 設備 ID 對每塊 LaunchPad 進行標記。</p>
+<ul>
+<li>此外，將其中一塊 LaunchPad 標記為<code>傳感器</code>，將另一塊標記為<code>MAC-CoP</code>。本實驗將多次提到這些標記。建議為此使用非永久性標記（如便利貼），因為這些標籤可能僅適用於本次實驗。</li>
+</ul>
+<h1 class="body-heading" id="5lu75yqhidhvvjrlr7lg5lyg5osf5zmoyexhdw5jafbhzcdov5vooyznvjbnqis-">任務 1：對<code>傳感器</code>LaunchPad 進行編程<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidhvvjrlr7lg5lyg5osf5zmoyexhdw5jafbhzcdov5vooyznvjbnqis-"></a></h1><p>1.假設您已安裝了受支持設備列表部分中的對應 SDK。如果未安裝，請現在進行安裝。</p>
+<ul>
+<li><p>將<code>傳感器</code>LaunchPad 連接到 Windows 電腦。</p>
+</li>
+<li><p>運行 UniFlash 並執行以下步驟：</p>
+</li>
+<li><p>Uniflash 會自動查找已連接到您的電腦的任何 LaunchPad：</p>
+<p>  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="UniFlash.png" alt="Uniflash" class="img-responsive"></div><p></p>
+<div class="bs-callout bs-callout-warning "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">如果有多個 LaunchPad 連接到該電腦：
+</span></h4>
+<p>  請確保在對固件進行編程時選擇正確的 LaunchPad：將在任務 0 中寫入 LaunchPad 上的 XDS 設備 ID 與上面圖像的序列號字段中顯示的設備 ID 進行對比。</p>
+</div>
+</li>
+<li><p>轉到 Uniflash 中的 <code>Settings &amp; Utilities</code> 選項卡，擦除所有受保護的部分：</p>
+<p>  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="UniFlash_1.png" alt="Uniflash" class="img-responsive"></div><p></p>
+</li>
+<li><p>對設備進行編程前，將擦除設置改回 <code>Necessary Sectors Only (Retain untouched content within sector)</code>，如下所示：</p>
+<p>  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="UniFlash_2.png" alt="Uniflash" class="img-responsive"></div><p></p>
+</li>
+<li><p>在 Program 選項卡中的 <strong>Flash image(s)</strong> 下，瀏覽到預生成的傳感器十六進制文件，其位置為：<br>
+<br>
+<code>C:\ti\&lt;sdk_path&gt;\examples\rtos\&lt;your_target_board&gt;\ti154stack\hexfiles\default\sensor_&lt;your_target_board&gt;_default.hex</code><br></p>
+<p>其中 <code>&lt;sdk_path&gt;</code> 與 SDK 相對應，<code>&lt;your_target_board&gt;</code> 與用於此實驗的 LaunchPad 相對應。</p>
+</li>
+<li><p>確保首先 <strong>Load Image</strong>，然後 <strong>Verify Image</strong>
+  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="UniFlash_3.png" alt="Uniflash" class="img-responsive"></div><p></p>
+</li>
+</ul>
+<h1 class="body-heading" id="5lu75yqhidlvvjrlr7lgtufdlunvugbmyxvuy2hqywqg6l-b6kgm57yw56il">任務 2：對<code>MAC-CoP</code>LaunchPad 進行編程<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidlvvjrlr7lgtufdlunvugbmyxvuy2hqywqg6l-b6kgm57yw56il"></a></h1><p>1.按照上面的步驟並使用位於以下位置的對應十六進制映像對<code>MAC-CoP</code>LaunchPad 進行編程：</p>
+<p>  <code>C:\ti\&lt;sdk_path&gt;\examples\rtos\&lt;your_target_board&gt;\ti154stack\hexfiles\coprocessor_&lt;your_target_board&gt;.hex</code><br></p>
+<p>  其中 <code>&lt;sdk_path&gt;</code> 與 SDK 相對應，<code>&lt;your_target_board&gt;</code> 與用於此實驗的 LaunchPad 相對應。</p>
+<h1 class="body-heading" id="5lu75yqhidpvvjrlronoo4ugvekgmtuunc1tdgfjaybmaw51ecdnvzhlhbmgu0rl">任務 3：安裝 TI 15.4-Stack Linux 網關 SDK<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidpvvjrlronoo4ugvekgmtuunc1tdgfjaybmaw51ecdnvzhlhbmgu0rl"></a></h1><p>1.將 <a href="http://www.ti.com.cn/tool/cn/ti-15.4-stack-gateway-linux-sdk">TI 15.4-Stack Linux 網關 SDK</a> 下載到 ubuntu 14.04 計算機。SDK 軟件包以 Linux 可執行文件的形式提供，名為 <strong>ti15.4stack_linux_x64_x_xx_xx_xx.run</strong>（x_xx… 將呈現為實際的版本號）。</p>
+<ul>
+<li><p>為安裝程序分配執行權限，然後開始執行：</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_1" class="lang-c hljs cpp">chmod +x ti15.4stack_linux_x64_x_xx_xx_xx.run
+./ti15.4stack_linux_x64_x_xx_xx_xx.run
+</code></pre><span class="code-title"><p>運行網關 SDK 安裝程序</p>
+</span></div></div>
+</li>
+<li><p>按照安裝程序說明，接受許可協議，然後選擇目標路徑以將 SDK 內容提取到 Linux 文件系統。等待安裝程序完成安裝。</p>
+</li>
+</ul>
+<h1 class="body-heading" id="5lu75yqhidrh77ya5yeg5ash5bwm5ywl5byp5li75py6">任務 4a：準備嵌入式主機<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidrh77ya5yeg5ash5bwm5ywl5byp5li75py6"></a></h1><p>此任務介紹了將 BeagleBone Black 設置為 TI 15.4-Stack Linux 網關的嵌入式主機的完整過程。如果使用 ubuntu Linux 電腦（或虛擬機）而不是 BBB 作為主機，請跳過此任務並直接進入下一任務。</p>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">以不同方式執行任務
+</span></h4>
+<p>下面的某些任務可在 Windows 或 Linux 電腦上執行（請不要與前文討論的主機平台混淆，此處討論的是<code>執行此實驗所使用的電腦</code>）。為簡單起見，對於此類任務僅提供面向 Windows 的詳細說明。如果您可以熟練地在 Linux 電腦上執行某些任務並且更願意這樣做，那就請大膽嘗試吧！</p>
+</div>
+<ol>
+<li><p>按照如下步驟使用處理器 SDK 映像對 SD 卡進行編程，此操作可在 Windows 或 Linux 計算機上完成：</p>
+<ol>
+<li><p>下載預生成的 TI 處理器 SDK SD 卡映像文件，<a href="http://software-dl.ti.com/processor-sdk-linux/esd/AM335X/latest/index_FDS.html"><strong>am335x-evm-linux-03.02.00.05.img.zip</strong></a></p>
+</li>
+<li><p>按照以下說明並使用上述映像對 microSD 內存卡進行編程：<br>
+對於 Windows 的說明，請參照 <a href="http://processors.wiki.ti.com/index.php/Processor_SDK_Linux_Creating_a_SD_Card_with_Windows">此 wiki</a><br>
+對於 Linux 的說明，請參照 <a href="http://processors.wiki.ti.com/index.php/Processor_SDK_Linux_create_SD_card_script">此 wiki</a></p>
+</li>
+</ol>
+</li>
+<li><p>將 FTDI 電纜連接到 BeagleBone 上的接頭 J1 - 黑線應與用點標記的引腳進行連接。
+ </p><div class="modal-pop" style="cursor: zoom-in;"><img src="bbb_and_ftdi.jpg" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</li>
+<li><p>將 FTDI 電纜的 USB 連接器連接到 Windows 電腦。</p>
+</li>
+<li><p>FTDI 電纜應作為串行設備進行自動枚舉。如果未自動枚舉，請安裝所需的驅動器。</p>
+</li>
+<li><p>在該電腦上運行終端程序（如 Tera Term）並將其連接到 FTDI 電纜的串行端口。將其配置為使用 115,200kbps、8 個數據位、無奇偶校驗、1 個停止位、無流量控制。</p>
+</li>
+<li><p>使用新準備好的 SD 卡啟動 BBB：</p>
+<ol>
+<li><p>確保沒有 FTDI 電纜以外的其他線纜連接到 BBB（如電源、USB）。</p>
+</li>
+<li><p>使用以太網電纜將 BBB 連接到您的網絡</p>
+</li>
+<li><p>將 SD 卡插入 BBB</p>
+</li>
+<li><p>按住引導選擇按鈕（在 SD 卡插槽旁）。注意，該啟動按鈕僅在初始通電時可見，執行其他類型的重置時不可見：</p>
+<p></p><div class="modal-pop" style="cursor: zoom-in;"><img src="bbb_boot_button.jpg" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</li>
+<li><p>按住啟動按鈕的同時，為 BBB 接通 5V 電源</p>
+</li>
+<li><p>等待幾秒，然後鬆開啟動按鈕。LED 應在 5 至 15 秒後開始閃爍。</p>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">請耐心等待 :-)
+</span></h4>
+<p>通過新格式化的 SD 卡第一次啟動時，需要 1 至 2 分鐘或更長時間，在這段時間內，BBB Linux 發行版會執行某些一次性步驟。</p>
+</div>
+</li>
+</ol>
+</li>
+<li><p>BBB 啟動並運行後，您應看到 Arago Project 歡迎消息和輸入用戶名稱的提示。鍵入用戶名稱 <strong>root</strong> 並按 <kbd>Enter</kbd>。
+ </p><div class="modal-pop" style="cursor: zoom-in;"><img src="arago_project_welcome.png" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</li>
+<li><p>使用 ifconfig 命令獲取分配給 BBB 用於進行以太網連接的 IP 地址（您將需要此地址向 BBB 傳輸文件和打開其他終端窗口）：</p>
+<p></p><div class="modal-pop" style="cursor: zoom-in;"><img src="ifconfig_output.png" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</li>
+<li><p>打開另一個終端窗口，並將使用 SSH 的 BBB 連接到上文獲取的 IP 地址。使用用戶名稱 <strong>root</strong>，無需密碼。關閉之前的終端窗口（通過 FTDI 電纜進行連接）。</p>
+<div class="bs-callout bs-callout-warning "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">為什麼？
+</span></h4>
+<p> 通過 FTDI 電纜建立的控制台連接可提供一些額外級別的調試跟蹤，這在開發期間較為有用，但可能會降低用戶交互的舒適體驗。</p>
+</div>
+</li>
+<li><p>從在任務 3 中安裝的 Linux 網關 SDK 中找到文件 <strong>bbb_prebuilt.tar.gz</strong>。此文件位於 SDK 主文件夾下的 <strong>prebuilt</strong> 目錄下（默認情況下，SDK 會提取到 <strong>~/ti/simplelink/ti-15.4stack-x.xx.xx.xx</strong>）。<br>
+<br>
+將 ubuntu 計算機上的此文件複製到 BBB 文件系統 - 還可以使用 USB 拇指驅動器執行此操作。或者，如果 BBB 和 ubuntu 計算機（已安裝網關 SDK）位於同一網絡，您可以通過在 ubuntu 計算機上執行以下命令來使用 scp 傳輸該文件：<br>
+<br>
+首先，將工作目錄更改為該文件所在的目錄，然後調用 scp（將 &lt;bbb-ip-address&gt; 替換為 BBB 的實際 IP 地址）：</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_2" class="lang-c hljs cpp">cd ~/ti/simplelink/ti-<span class="hljs-number">15.4</span><span class="hljs-built_in">stack</span>-x.xx.xx.xx/prebuilt
+scp bbb_prebuilt.tar.gz root@&lt;bbb-ip-address&gt;:/home/root/
+</code></pre><span class="code-title"><p>將預生成的文件複製到 BBB</p>
+</span></div></div>
+</li>
+<li><p>在 BBB 上，通過執行以下命令提取 <strong>bbb_prebuilt.tar.gz</strong> 文件</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_3" class="lang-c hljs cpp">cd ~/
+tar -xvf bbb_prebuilt.tar.gz
+</code></pre><span class="code-title"><p>提取預生成的內容</p>
+</span></div></div>
+</li>
+</ol>
+<h1 class="body-heading" id="5lu75yqhidri77ya5yeg5ash55s16isr5li75py6">任務 4b：準備電腦主機<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidri77ya5yeg5ash55s16isr5li75py6"></a></h1><p>如果使用 BeagleBone Black 作為主機，請跳過此任務並直接進入下一任務。</p>
+<ol>
+<li><p>假設以標準用戶身份而不是 root 登錄 ubuntu 電腦，您需要執行以下命令來獲取串行端口（用於與 LaunchPad 進行通信）的訪問權限：</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_4" class="lang-c hljs cpp">sudo adduser $USER dialout
+</code></pre><span class="code-title"><p>允許訪問 LaunchPad 的串行端口</p>
+</span></div></div>
+</li>
+<li><p>為使上述命令完全生效，請在執行該命令後重置 ubuntu 電腦。</p>
+</li>
+</ol>
+<h1 class="body-heading" id="5lu75yqhidxvvjrov5dooyzlkozkvb-nlkjnvzhlhbm-">任務 5：運行和使用網關<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5lu75yqhidxvvjrov5dooyzlkozkvb-nlkjnvzhlhbm-"></a></h1><p>本章節的<code>主機</code>一詞指 BBB 或 PC 主機。如需進行區分，文章中會提供明確說明。</p>
+<h2 class="body-heading" id="5bcgie1bqydljy-lpitnkiblmajov57mjqxlildkulvmnlo-">將 MAC 協處理器連接到主機<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5bcgie1bqydljy-lpitnkiblmajov57mjqxlildkulvmnlo-"></a></h2><ol>
+<li><p>使用 USB 線纜將<code>MAC-CoP</code>LaunchPad 插入主機。如果使用嵌入式主機選項，視圖應如下所示：</p>
+<p> </p><div class="modal-pop" style="cursor: zoom-in;"><img src="bbb_all_connected.jpg" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</li>
+<li><p>等待幾秒鐘，然後通過在主機終端窗口中輸入以下命令來確認 LaunchPad 已作為 2 個串行端口成功進行枚舉：</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_5" class="lang-c hljs cpp">ls –l /dev/ttyACM*
+</code></pre><span class="code-title"><p>驗證<code>MAC-CoP</code>的枚舉是否正確</p>
+</span></div></div>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">運行是否正常
+</span></h4>
+<p>  如果<code>MAC-CoP</code>LaunchPad 已成功枚舉，您應看到如下輸出。如果未成功，請繼續閱讀文章以找到可能的解決方案。</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_6" class="lang-c hljs cpp">/dev/ttyACM0  /dev/ttyACM1
+</code></pre><span class="code-title"><p>成功的枚舉輸出</p>
+</span></div></div>
+</div>
+<div class="bs-callout bs-callout-warning "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">如果未成功應怎麼做？
+</span></h4>
+<p>  如果插入<code>MAC-CoP</code>LaunchPad 後未看到任何已枚舉的新串行端口，請再等待幾秒鐘，然後嘗試再次輸入上文的命令。<br>
+  <br>
+  此外，LaunchPad 可能已使用其他串行設備名稱（如 /dev/ttyACM3）進行枚舉。如果是這種情況，您將需要更新網關配置文件，該文件默認為 /dev/ttyACM0。要執行此操作，請打開文件 prebuilt/bin/collector.cfg，找到 <strong>ttyACM0</strong> 並相應地更新此值。注意，LaunchPad 作為 2 個單獨的串行設備進行枚舉 - 請選擇其中後綴數量較少的設備。如果無法執行後面的步驟，請返回此步驟並改為嘗試另一個串行設備名稱。</p>
+</div>
+</li>
+</ol>
+<h2 class="body-heading" id="5zcv5yqo5bqu55soiczuzgfzadsg5bya5zcv572r57uc">啟動應用 – 開啟網絡<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5zcv5yqo5bqu55soiczuzgfzadsg5bya5zcv572r57uc"></a></h2><p>prebuilt 目錄包含一個名為 run_demo.sh 的簡單 shell 腳本，您僅需此腳本即可啟動並運行所有內容。</p>
+<ol>
+<li><p>根據所使用的主機平台，在主機上更改工作目錄。如果使用電腦主機，請將 x.xx... 替換為實際的 SDK 版本號：</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_7" class="lang-c hljs cpp">cd ~/prebuilt
+</code></pre><span class="code-title"><p>如果使用 BBB 主機</p>
+</span></div></div>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_8" class="lang-c hljs cpp">cd ~/ti/simplelink/ti-<span class="hljs-number">15.4</span><span class="hljs-built_in">stack</span>-x.xx.xx.xx/prebuilt
+</code></pre><span class="code-title"><p>如果使用電腦主機</p>
+</span></div></div>
+</li>
+<li><p>在主機上執行以下命令。rm 命令用於繞過任何預先存在的網絡配置，只有已在此 BBB 上運行過網關時才需要使用。sh 腳本可啟動 TI 15.4-Stack 網關和收集器應用。</p>
+<div style="display: inline-block;"><div style="display: block;"><button type="button" class="btn btn-xs btn-warning float-right select-text" style="margin: 0px; position: relative;">Select text</button></div><div class="pre-container"><pre><code id="codeBlock_9" class="lang-c hljs cpp">rm bin/nv-simulation.bin
+./run_demo.sh
+</code></pre><span class="code-title"><p>啟動 TI 15.4-Stack Linux 網關</p>
+</span></div></div>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">預期結果
+</span></h4>
+<p>  網關將會啟動並顯示一些指示性消息，然後它會恢覆命令提示符，同時繼續在後台運行。如果使用 BBB 主機，終端窗口將與下圖相似。如果使用電腦主機，除在控制台中有相似的軌跡外，Web 瀏覽器將自動打開並連接到收集器應用（在後文進行討論）。
+  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="gateway_started.png" alt="Resource Explorer" class="img-responsive"></div>
+  注意，命令提示符顯示後，可能出現 <strong>Connected to App Server</strong> 消息（顯示幾秒鐘）。<p></p>
+</div>
+</li>
+<li><p>集成的 Web 服務器現可通過控制台軌跡中提供的鏈接進行訪問。如果使用電腦主機，Web 瀏覽器將自動打開並連接到此 Web 服務器。如果使用 BBB 主機，選擇可從電腦訪問的鏈接（具體取決於電腦的 IP 地址），打開電腦上的 Web 瀏覽器，在地址行中輸入此鏈接，然後按 <kbd>ENTER</kbd>。使用的鏈接應與之前使用 ifconfig 發現的 IP 地址相同，還應具有特定的端口號 - 1310。將鏈接複製到 Web 瀏覽器後，請確保鏈接的完整性（包括端口號）。如果未包含端口號，瀏覽器將默認為端口 80，這可能指向其他超出此實驗範圍的網頁。</p>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">預期外觀
+</span></h4>
+<p>  Web 瀏覽器顯示的頁面應與下圖相似：
+  </p><div class="modal-pop" style="cursor: zoom-in;"><img src="web_access_page.png" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</div>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">修改網絡參數
+</span></h4>
+<p>  請留意剛剛打開的網頁中的 PanID 值。通過編輯 <strong>prebuilt/bin/collector.cfg</strong> 文件，然後重啟 BBB 並重新運行網關（如上文所述），即可輕鬆更改此值、射頻通道、信標級數和其他與射頻相關的參數。</p>
+</div>
+</li>
+</ol>
+<h2 class="body-heading" id="5bcg5lyg5osf5zmo6k6-5ash5re75yqg5yiw572r57uc">將傳感器設備添加到網絡<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5bcg5lyg5osf5zmo6k6-5ash5re75yqg5yiw572r57uc"></a></h2><p>首次啟動網關示例應用程序時，Sensor Nodes 列表中不會顯示任何設備，並且網絡不支持加入，即網絡不接受新的設備連接。</p>
+<ol>
+<li><p>將<code>傳感器</code>LaunchPad 連接到可用 USB 供電端口或 USB 電源適配器。</p>
+</li>
+<li><p>將傳感器節點重置為出廠默認設置：按住 <strong>Button 2</strong>，同時按住並釋放 <strong>Reset</strong> 按鈕，然後釋放 <strong>Button 2</strong>。重置後，傳感器設備將自動嘗試連接到可用網絡。</p>
+</li>
+<li><p>單擊網頁上的 <strong>Open</strong> 按鈕，為新設備打開網絡。傳感器將在幾秒後連接到網關/收集器</p>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">預期結果
+</span></h4>
+<p> <code>傳感器</code>LaunchPad 連接到網絡後，紅色 LED (DIO6) 將會亮起，<strong>Sensor Nodes</strong> 列表將顯示此新添加的設備。</p>
+</div>
+<div class="bs-callout bs-callout-warning "><h4><span class="glyphicon glyphicon-exclamation-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">如果未連接...
+</span></h4>
+<p> ...只需再次按<code>傳感器</code>LaunchPad 的重置按鈕 - 此時無需按 Button 1 和 Button 2。</p>
+</div>
+</li>
+</ol>
+<h2 class="body-heading" id="55ur6keg5lyg5osf5zmo5pww5o2u5bm25y-r6ycb5o6n5yi25zg95luk">監視傳感器數據並發送控制命令<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#55ur6keg5lyg5osf5zmo5pww5o2u5bm25y-r6ycb5o6n5yi25zg95luk"></a></h2><ol>
+<li><p>查看在 Web 瀏覽器中打開的 Web 界面。</p>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">傳感器數據報告
+</span></h4>
+<p> 將新設備添加到網絡後，設備的短地址和擴展地址應出現在設備列表中。起初，數據字段應顯示為 —（連字符），表示沒有數據。1-2 分鐘後，還將顯示出傳感器讀取值（確切間隔需使用 #define 值在收集器應用中配置 - 有關詳細信息，請參閱 TI 15.4-Stack 嵌入式開發人員指南或 Linux 示例收集器源代碼）。自此開始，傳感器節點會定期向收集器報告傳感器數據，顯示內容也會相應更新。</p>
+<p> </p><div class="modal-pop" style="cursor: zoom-in;"><img src="web_sensor_connected.png" alt="Resource Explorer" class="img-responsive"></div><p></p>
+</div>
+</li>
+<li><p>單擊 Web 界面中的 Toggle LED 按鈕</p>
+<div class="bs-callout bs-callout-success "><h4><span class="glyphicon glyphicon-ok-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">通過網關與傳感器進行交互
+</span></h4>
+<p> 單擊 Toggle LED 按鈕將向傳感器模塊發送消息以便切換 LED。成功切換 LED 前可能出現輕微延遲（最多幾秒鐘）。出現延遲的原因是：傳感器節點通常處於睡眠模式，僅在接收收集器緩存上的命令時定期喚醒。</p>
+</div>
+</li>
+</ol>
+<h1 class="body-heading" id="5pya5zco6k-05pio">最後說明<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5pya5zco6k-05pio"></a></h1><p>網絡信息和狀態由收集器（使用主機文件系統）和傳感器（使用內部刷寫）保存在非易失性存儲器中。這能確保這兩個設備可在週期供電後重新建立連接。
+如果希望從頭重複執行任務 5，您需要按照上述實驗資料將收集器和傳感器重置為出廠默認設置（對於傳感器應組合使用按鈕，對於收集器應刪除文件 nv-simulation.bin）</p>
+<div class="bs-callout bs-callout-info "><h4><span class="glyphicon glyphicon-info-sign gi-2x" style="vertical-align: middle; margin-right: 0.2em;"></span><span style="vertical-align: middle;">想要深入瞭解？
+</span></h4>
+<p>本實驗以預生成的二進制文件為基礎。若要從頭生成和運行示例，請參閱 TI 15.4-Stack Linux 開發人員指南中的<code>Linux 開發主機</code>章節。</p>
+</div>
+<h1 class="body-heading" id="5y-c6icd6lwe5paz">參考資料<a class="anchor-link glyphicon glyphicon-link" aria-hidden="true" href="#5y-c6icd6lwe5paz"></a></h1><p><strong>TI 15.4-Stack wiki 頁面</strong>，網址：<a href="http://www.ti.com/ti154stack-wiki">http://www.ti.com/ti154stack-wiki</a></p>
+<p><strong>CC13xx 軟件概述</strong> – 請參閱 <a href="http://www.ti.com.cn/tool/cn/cc13xx-sw">http://www.ti.com.cn/tool/cn/cc13xx-sw</a>。</p>
+<p><strong>CC13xx 技術參考手冊</strong> – 請參閱 <a href="http://www.ti.com/cn/lit/swcu117">此處</a></p>
+<!-- Definition of inline references -->
+<div style="margin-top: 4em; font-size: smaller;" align="center">
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/"><img alt="Creative Commons 許可證" style="border-width: 0px;" src="cc_license_icon.png"></a><br>本文根據 <a rel="license" href="http://creativecommons.org/licenses/by-nc-nd/4.0/">Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 國際許可證</a>獲得許可。</div>
+
+</div><div class="col-xs-4 col-sm-2 sidebar-offcanvas bs-docs-sidebar hidden-print" id="sidebar-overview"><ul class="nav nav-stacked fixed" id="sidebar"><li class=""><a href="#566a5lul">簡介</a></li><li class=""><a href="#5psv5oyb55qe6k6-5ashl1nesw-">支持的設備/SDK</a></li><li class=""><a href="#5ywi5yaz5p2h5lu2">先決條件</a><ul class="nav nav-stacked"><li class=""><a href="#55-l6k-g6iom5pmv">知識背景</a></li><li class=""><a href="#6l2v5lu2">軟件</a></li><li class=""><a href="#56gs5lu2">硬件</a></li></ul></li><li class=""><a href="#5lu75yqhiddvvjrlr7kgtgf1bmnougfkioi-m-ihjoagh-iusa-">任務 0：對 LaunchPad 進行標記</a></li><li class=""><a href="#5lu75yqhidhvvjrlr7lg5lyg5osf5zmoyexhdw5jafbhzcdov5vooyznvjbnqis-">任務 1：對傳感器LaunchPad 進行編程</a></li><li class=""><a href="#5lu75yqhidlvvjrlr7lgtufdlunvugbmyxvuy2hqywqg6l-b6kgm57yw56il">任務 2：對MAC-CoPLaunchPad 進行編程</a></li><li class=""><a href="#5lu75yqhidpvvjrlronoo4ugvekgmtuunc1tdgfjaybmaw51ecdnvzhlhbmgu0rl">任務 3：安裝 TI 15.4-Stack Linux 網關 SDK</a></li><li class=""><a href="#5lu75yqhidrh77ya5yeg5ash5bwm5ywl5byp5li75py6">任務 4a：準備嵌入式主機</a></li><li><a href="#5lu75yqhidri77ya5yeg5ash55s16isr5li75py6">任務 4b：準備電腦主機</a></li><li><a href="#5lu75yqhidxvvjrov5dooyzlkozkvb-nlkjnvzhlhbm-">任務 5：運行和使用網關</a><ul class="nav nav-stacked"><li><a href="#5bcgie1bqydljy-lpitnkiblmajov57mjqxlildkulvmnlo-">將 MAC 協處理器連接到主機</a></li><li><a href="#5zcv5yqo5bqu55soiczuzgfzadsg5bya5zcv572r57uc">啟動應用 – 開啟網絡</a></li><li><a href="#5bcg5lyg5osf5zmo6k6-5ash5re75yqg5yiw572r57uc">將傳感器設備添加到網絡</a></li><li><a href="#55ur6keg5lyg5osf5zmo5pww5o2u5bm25y-r6ycb5o6n5yi25zg95luk">監視傳感器數據並發送控制命令</a></li></ul></li><li><a href="#5pya5zco6k-05pio">最後說明</a></li><li><a href="#5y-c6icd6lwe5paz">參考資料</a></li></ul></div></div></div></div>
+
+<link rel="stylesheet" href="zenburn.css">
+<script src="about:blank"></script>
+<script src="about:blank"></script>
+<script src="about:blank"></script>
+<script type="text/javascript">/* Code removed by ScrapBook */</script><script src="about:blank"></script>      <div class="modal" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">        <div class="vertical-alignment-helper">          <div class="modal-dialog vertical-align-center">             <div class="modal-dialog">               <div class="modal-content" style="margin-left: auto; margin-right: auto;">                 <div class="modal-body">                   <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">Close</span></button>                   <img src="154-stack_03_linux_project_0.chinese.html" class="imagepreview img-responsive">                 </div>              </div>            </div>          </div>        </div>      </div>
+
+
+</body>
+</html>

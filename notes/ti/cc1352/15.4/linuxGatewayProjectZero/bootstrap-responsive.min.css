@@ -1,0 +1,33 @@
+/* Code tidied up by ScrapBook */
+@media (min-width: 768px) and (max-width: 979px) {
+}
+@media (max-width: 767px) {
+}
+@media (min-width: 1200px) {
+  .row { margin-left: -30px; }
+  .row::before, .row::after { display: table; line-height: 0; content: ""; }
+  .row::after { clear: both; }
+  .container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container { width: 1170px; }
+}
+@media (min-width: 768px) and (max-width: 979px) {
+  .row { margin-left: -20px; }
+  .row::before, .row::after { display: table; line-height: 0; content: ""; }
+  .row::after { clear: both; }
+  .container, .navbar-static-top .container, .navbar-fixed-top .container, .navbar-fixed-bottom .container { width: 724px; }
+}
+@media (max-width: 767px) {
+  body { padding-right: 20px; padding-left: 20px; }
+  .navbar-fixed-top, .navbar-fixed-bottom, .navbar-static-top { margin-right: -20px; margin-left: -20px; }
+  .container-fluid { padding: 0px; }
+  .container { width: auto; }
+  .row, .thumbnails { margin-left: 0px; }
+  .modal { position: fixed; top: 20px; right: 20px; left: 20px; width: auto; margin: 0px; }
+}
+@media (max-width: 480px) {
+  .modal { top: 10px; right: 10px; left: 10px; }
+}
+@media (max-width: 979px) {
+  body { padding-top: 0px; }
+}
+@media (min-width: 980px) {
+}
