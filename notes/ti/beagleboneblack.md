@@ -13,7 +13,9 @@
 
 > [eLinux.org](https://elinux.org/Beagleboard:BeagleBoneBlack)
 
-> [Buildroot Notes](/notes/ti/beagleboneblack/buildroot)
+> [Buildroot](/notes/ti/beagleboneblack/buildroot)
+
+> [FAQ](/notes/ti/beagleboneblack/faq)
 
 > [Information](/notes/ti/beagleboneblack/info1.png)
 
